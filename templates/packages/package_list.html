@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pacotes Turísticos - MONITOUR{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg py-20">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl font-bold text-white mb-6">Nossos Pacotes</h1>
+            <p class="text-xl text-white leading-relaxed">
+                Descubra destinos incríveis com nossos pacotes cuidadosamente planejados. 
+                Experiências únicas aguardam por você!
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Filters Section -->
+<section class="py-12 bg-light-blue">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-secondary mb-6">
+                <i class="fas fa-filter text-primary mr-2"></i>
+                Filtrar Pacotes
+            </h2>
+            
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Search -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+                    <input type="text" 
+                           name="q" 
+                           placeholder="Destino ou palavra-chave..." 
+                           value="{{ current_filters.search|default:'' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                    <select name="category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">Todas</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" 
+                                    {% if current_filters.category == category.slug %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Destination -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Destino</label>
+                    <select name="destination" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">Todos</option>
+                        {% for destination in destinations %}
+                            <option value="{{ destination.slug }}" 
+                                    {% if current_filters.destination == destination.slug %}selected{% endif %}>
+                                {{ destination.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Price Range -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preço (R$)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" 
+                               name="min_price" 
+                               placeholder="Mín" 
+                               value="{{ current_filters.min_price|default:'' }}"
+                               class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="number" 
+                               name="max_price" 
+                               placeholder="Máx" 
+                               value="{{ current_filters.max_price|default:'' }}"
+                               class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                
+                <!-- Submit -->
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full bg-primary hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Packages -->
+{% if featured_packages %}
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">Pacotes em Destaque</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Nossas ofertas mais populares e imperdíveis
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {% for package in featured_packages %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                {% if package.featured_image %}
+                    <img src="{{ package.featured_image.url }}" 
+                         alt="{{ package.title }}" 
+                         class="w-full h-48 object-cover">
+                {% else %}
+                    <div class="w-full h-48 bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                        <i class="fas fa-mountain text-white text-4xl"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                            {{ package.category.name }}
+                        </span>
+                        {% if package.has_discount %}
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                -{{ package.discount_percentage }}%
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
+                        <a href="{{ package.get_absolute_url }}">{{ package.title }}</a>
+                    </h3>
+                    
+                    <p class="text-gray-600 mb-4 line-clamp-2">{{ package.short_description }}</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-clock mr-2 text-primary"></i>
+                            <span>{{ package.get_duration_text }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-users mr-2 text-primary"></i>
+                            <span>{{ package.min_people }}-{{ package.max_people }} pessoas</span>
+                        </div>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-primary"></i>
+                            <span>{{ package.destination.name }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-signal mr-2 text-primary"></i>
+                            <span class="capitalize">{{ package.get_difficulty_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-right">
+                            {% if package.has_discount %}
+                                <div class="text-gray-400 line-through text-sm">R$ {{ package.original_price }}</div>
+                            {% endif %}
+                            <div class="text-2xl font-bold text-primary">R$ {{ package.price }}</div>
+                        </div>
+                        <a href="{{ package.get_absolute_url }}" class="btn-primary">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- All Packages -->
+<section class="py-20 {% if not featured_packages %}pt-0{% endif %}">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">
+                {% if featured_packages %}Todos os Pacotes{% else %}Nossos Pacotes{% endif %}
+            </h2>
+            <p class="text-xl text-gray-600">
+                Encontrados {{ page_obj.paginator.count }} pacote{{ page_obj.paginator.count|pluralize }}
+            </p>
+        </div>
+        
+        {% if page_obj %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+                {% for package in page_obj %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                    {% if package.featured_image %}
+                        <img src="{{ package.featured_image.url }}" 
+                             alt="{{ package.title }}" 
+                             class="w-full h-40 object-cover">
+                    {% else %}
+                        <div class="w-full h-40 bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                            <i class="fas fa-mountain text-white text-3xl"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-secondary text-white px-2 py-1 rounded text-xs font-medium">
+                                {{ package.category.name }}
+                            </span>
+                            {% if package.featured %}
+                                <span class="text-yellow-500">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <h3 class="font-bold text-secondary mb-2 hover:text-primary transition-colors line-clamp-2">
+                            <a href="{{ package.get_absolute_url }}">{{ package.title }}</a>
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ package.short_description }}</p>
+                        
+                        <div class="space-y-1 mb-3">
+                            <div class="flex items-center text-gray-500 text-xs">
+                                <i class="fas fa-map-marker-alt mr-1 text-primary"></i>
+                                <span>{{ package.destination.name }}</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-xs">
+                                <i class="fas fa-clock mr-1 text-primary"></i>
+                                <span>{{ package.get_duration_text }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                {% if package.has_discount %}
+                                    <div class="text-gray-400 line-through text-xs">R$ {{ package.original_price }}</div>
+                                {% endif %}
+                                <div class="text-lg font-bold text-primary">R$ {{ package.price }}</div>
+                            </div>
+                            <a href="{{ package.get_absolute_url }}" 
+                               class="bg-primary hover:bg-pink-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
+                                Ver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" 
+                           class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-4 py-2 bg-primary text-white rounded-lg font-medium">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}" 
+                               class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" 
+                           class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-20">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-suitcase-rolling text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-600 mb-4">Nenhum pacote encontrado</h3>
+                <p class="text-gray-500 mb-8">Tente ajustar os filtros ou navegue por todas as opções.</p>
+                <a href="{% url 'packages:package_list' %}" class="btn-primary">
+                    <i class="fas fa-refresh mr-2"></i>
+                    Ver Todos os Pacotes
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-light-blue">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-4xl font-bold text-secondary mb-6">
+                Não Encontrou o que Procura?
+            </h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Nossa equipe pode criar um pacote personalizado especialmente para você. 
+                Entre em contato e conte-nos sobre sua viagem dos sonhos!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn-primary text-lg px-8 py-4">
+                    <i class="fas fa-envelope mr-3"></i>
+                    Solicitar Pacote Personalizado
+                </a>
+                {% if site_settings.whatsapp %}
+                    <a href="https://wa.me/{{ site_settings.whatsapp|cut:'+' }}" 
+                       target="_blank"
+                       class="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all hover:scale-105">
+                        <i class="fab fa-whatsapp mr-3"></i>
+                        WhatsApp
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

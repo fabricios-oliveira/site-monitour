@@ -1,0 +1,26 @@
+{% load crispy_forms_field %}
+
+<div class="{% if field_class %}{{ field_class }}{% endif %}">
+    {% if field.label and not field|is_checkbox %}
+        <label for="{{ field.id_for_label }}" class="{% if label_class %}{{ label_class }}{% else %}block text-sm font-semibold text-gray-700 mb-2{% endif %}">
+            {{ field.label }}{% if field.field.required %}<span class="text-red-500 ml-1">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    {% crispy_field field %}
+    
+    {% if field.errors %}
+        <div class="mt-1">
+            {% for error in field.errors %}
+                <p class="text-red-500 text-sm flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if field.help_text %}
+        <p class="mt-1 text-sm text-gray-600">{{ field.help_text }}</p>
+    {% endif %}
+</div>

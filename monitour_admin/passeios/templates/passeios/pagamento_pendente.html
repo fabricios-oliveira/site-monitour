@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Pagamento Pendente{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 100px auto; text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    
+    <div style="font-size: 60px; margin-bottom: 20px;">⏳</div>
+    
+    <h1 style="color: #ffc107; margin-bottom: 10px;">Pagamento Pendente</h1>
+    
+    <p style="font-size: 16px; color: #666; margin-bottom: 30px;">
+        Seu pagamento está sendo processado. 
+        Você receberá uma confirmação em breve por email.
+    </p>
+    
+    <div style="background: #e7f3ff; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #0066cc;">
+        <p><strong>📋 Informações importantes:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px; text-align: left;">
+            <li>Verifique seu email para mais detalhes</li>
+            <li>Não feche esta janela sem confirmar</li>
+            <li>O processamento pode levar até 24 horas</li>
+        </ul>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <a href="/gerencia/" style="padding: 12px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            📊 Ir para Dashboard
+        </a>
+        <a href="{% url 'passeios:venda_principal' %}" style="padding: 12px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            🎫 Nova Venda
+        </a>
+    </div>
+</div>
+{% endblock %}

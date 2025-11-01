@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nós - MONITOUR{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg py-20">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl font-bold text-white mb-6">Nossa História</h1>
+            <p class="text-xl text-white leading-relaxed">
+                Há mais de {{ stats.years_experience }} anos criando experiências inesquecíveis 
+                e realizando sonhos de viagem pelo mundo inteiro.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Company Story -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="animate-on-scroll">
+                <div class="bg-gradient-to-br from-primary to-secondary rounded-xl p-1">
+                    <div class="bg-white rounded-lg p-8">
+                        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-map-marked-alt text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-secondary mb-6">Quem Somos</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            A <strong>MONITOUR</strong> nasceu da paixão por viagens e do desejo de proporcionar 
+                            experiências únicas e transformadoras. Somos uma agência especializada em turismo 
+                            personalizado, focada em criar memórias que durarão para toda a vida.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Nossa equipe é formada por profissionais apaixonados por viagens, que conhecem 
+                            profundamente os destinos que oferecemos. Cada membro da nossa equipe já vivenciou 
+                            as experiências que recomendamos.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Acreditamos que viajar é mais do que visitar lugares - é sobre descobrir culturas, 
+                            criar conexões e expandir horizontes. Por isso, cada pacote é cuidadosamente 
+                            planejado para oferecer o melhor de cada destino.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="animate-on-scroll">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-award text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-secondary mb-2">{{ stats.years_experience }}+</div>
+                        <div class="text-sm text-gray-600">Anos de Experiência</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                        <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-primary mb-2">{{ stats.happy_clients }}+</div>
+                        <div class="text-sm text-gray-600">Clientes Satisfeitos</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-globe text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-secondary mb-2">{{ stats.destinations }}+</div>
+                        <div class="text-sm text-gray-600">Destinos Únicos</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                        <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-plane text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-primary mb-2">{{ stats.tours_completed }}+</div>
+                        <div class="text-sm text-gray-600">Viagens Realizadas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission, Vision, Values -->
+<section class="py-20 bg-light-blue">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">Nossos Valores</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Os princípios que guiam nosso trabalho e nos tornam únicos no mercado de turismo
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-star text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-secondary mb-4">Excelência</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Buscamos a perfeição em cada detalhe, desde o planejamento até a execução 
+                    da viagem. Nosso compromisso é superar expectativas sempre.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-handshake text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-secondary mb-4">Confiança</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Construímos relacionamentos duradouros baseados na transparência, 
+                    honestidade e no cumprimento de todas as nossas promessas.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-secondary mb-4">Personalização</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Cada viajante é único, por isso criamos experiências sob medida, 
+                    respeitando gostos, orçamento e expectativas individuais.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Team -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">Nossa Equipe</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Profissionais apaixonados por viagens, dedicados a tornar seus sonhos realidade
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Team Member 1 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                <div class="bg-gradient-to-r from-primary to-secondary h-32"></div>
+                <div class="p-6 text-center -mt-16">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-user-tie text-3xl text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-secondary mb-2">Maria Silva</h3>
+                    <p class="text-primary font-medium mb-3">Diretora Geral</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        15 anos de experiência em turismo, especialista em destinos europeus 
+                        e planejamento de viagens corporativas.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Team Member 2 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                <div class="bg-gradient-to-r from-secondary to-primary h-32"></div>
+                <div class="p-6 text-center -mt-16">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-user-tie text-3xl text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-secondary mb-2">João Santos</h3>
+                    <p class="text-primary font-medium mb-3">Consultor Senior</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Especialista em destinos exóticos e aventuras. Conhece pessoalmente 
+                        mais de 40 países e fala 5 idiomas.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Team Member 3 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                <div class="bg-gradient-to-r from-primary to-secondary h-32"></div>
+                <div class="p-6 text-center -mt-16">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-user-tie text-3xl text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-secondary mb-2">Ana Costa</h3>
+                    <p class="text-primary font-medium mb-3">Coordenadora de Operações</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Responsável pela logística e operação das viagens. Garante que 
+                        cada detalhe seja executado com perfeição.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+{% if testimonials %}
+<section class="py-20 bg-light-blue">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">O Que Nossos Clientes Dizem</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Depoimentos reais de quem já viveu experiências incríveis conosco
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for testimonial in testimonials %}
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover animate-on-scroll">
+                <div class="flex items-center mb-4">
+                    {% if testimonial.photo %}
+                        <img src="{{ testimonial.photo.url }}" alt="{{ testimonial.name }}" class="w-12 h-12 rounded-full object-cover mr-3">
+                    {% else %}
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h4 class="font-bold text-secondary">{{ testimonial.name }}</h4>
+                        {% if testimonial.location %}
+                            <p class="text-sm text-gray-500">{{ testimonial.location }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= testimonial.rating %}
+                            <i class="fas fa-star text-yellow-400"></i>
+                        {% else %}
+                            <i class="far fa-star text-gray-300"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <p class="text-gray-600 italic">"{{ testimonial.testimonial }}"</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Certifications -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-secondary mb-4">Certificações e Parcerias</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Reconhecimentos que garantem a qualidade e confiabilidade dos nossos serviços
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-certificate text-white text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-secondary mb-2">CADASTUR</h3>
+                <p class="text-sm text-gray-600">Registrada no Ministério do Turismo</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-secondary mb-2">ABAV</h3>
+                <p class="text-sm text-gray-600">Associação Brasileira de Agências de Viagens</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-star text-white text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-secondary mb-2">ISO 9001</h3>
+                <p class="text-sm text-gray-600">Certificação de Qualidade</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-globe text-white text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-secondary mb-2">IATA</h3>
+                <p class="text-sm text-gray-600">Associação Internacional de Transporte Aéreo</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                Pronto para Conhecer o Mundo Conosco?
+            </h2>
+            <p class="text-xl text-white mb-8 leading-relaxed">
+                Junte-se aos milhares de viajantes que já confiaram seus sonhos à MONITOUR. 
+                Sua próxima aventura está a apenas um clique de distância!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'packages:package_list' %}" class="bg-white text-secondary px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all hover:scale-105">
+                    <i class="fas fa-suitcase-rolling mr-3"></i>
+                    Ver Nossos Pacotes
+                </a>
+                <a href="{% url 'core:contact' %}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-secondary transition-all hover:scale-105">
+                    <i class="fas fa-envelope mr-3"></i>
+                    Fale Conosco
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

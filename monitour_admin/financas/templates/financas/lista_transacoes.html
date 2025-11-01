@@ -1,0 +1,35 @@
+{% extends "financas/base_financas.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+    <div class="module">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Conta</th>
+                    <th>Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transacao in transacoes %}
+                <tr>
+                    <td>{{ transacao.data|date:"d/m/Y" }}</td>
+                    <td>{{ transacao.descricao }}</td>
+                    <td>{{ transacao.categoria.nome|default:"Não categorizado" }}</td>
+                    <td>{{ transacao.conta.nome }}</td>
+                    <td style="color: {% if transacao.valor < 0 %}#dc3545{% else %}#28a745{% endif %}; font-weight: bold;">
+                        {{ transacao.valor|floatformat:2 }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

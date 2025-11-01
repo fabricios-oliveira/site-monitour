@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} - MONITOUR Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'monitour-pink': '#E34A8E',
+                        'monitour-blue': '#1D3787',
+                        'monitour-light': '#F0F8FF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-monitour-blue text-white shadow-lg">
+        <div class="px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold">MONITOUR</h1>
+                <span class="ml-3 text-sm bg-monitour-pink px-2 py-1 rounded">Admin System</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span>Olá, {{ user.first_name|default:user.username }}</span>
+                <a href="{% url 'dashboard:logout' %}" 
+                   class="bg-monitour-pink hover:bg-pink-600 px-4 py-2 rounded transition duration-300">
+                    Sair
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="bg-white w-64 min-h-screen shadow-lg">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'dashboard:dashboard' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            📊 Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:packages' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            🎒 Pacotes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:sales' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            💰 Vendas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:inquiries' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            📧 Consultas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:destinations' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            🌍 Destinos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:categories' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            📂 Categorias
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:reports' %}" 
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            📈 Relatórios
+                        </a>
+                    </li>
+                    <li class="border-t pt-4 mt-4">
+                        <a href="/api/health/" target="_blank"
+                           class="block px-4 py-2 text-gray-700 hover:bg-monitour-light rounded-lg">
+                            🔌 API Status
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mb-4 p-4 rounded-lg
+                        {% if message.tags == 'success' %}bg-green-100 text-green-700{% endif %}
+                        {% if message.tags == 'error' %}bg-red-100 text-red-700{% endif %}
+                        {% if message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

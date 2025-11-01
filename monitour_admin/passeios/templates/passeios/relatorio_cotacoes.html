@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1>{{ title }}</h1>
+            <p><strong>Passeio:</strong> {{ passeio.titulo }}</p>
+        </div>
+        <div>
+            <a href="{% url 'passeios:relatorio_cotacoes_pdf' passeio.pk %}" class="button">Exportar para PDF</a>
+        </div>
+    </div>
+
+    <h2>Cotações Registradas</h2>
+    {% if cotacoes %}
+    <div class="results">
+    <table id="result_list">
+        <thead>
+            <tr>
+                <th>Fornecedor</th>
+                <th>Tipo de Serviço</th>
+                <th>Valor Cotado</th>
+                <th>Status</th>
+                <th>Selecionado?</th>
+                <th>Data da Cotação</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cotacao in cotacoes %}
+            <tr>
+                <td>{{ cotacao.fornecedor.nome_fantasia }}</td>
+                <td>{{ cotacao.get_tipo_servico_display }}</td>
+                <td>R$ {{ cotacao.valor_cotado|floatformat:2 }}</td>
+                <td>{{ cotacao.get_status_display }}</td>
+                <td>{% if cotacao.fornecedor_selecionado %}Sim{% else %}Não{% endif %}</td>
+                <td>{{ cotacao.data_cotacao|date:"d/m/Y H:i" }}</td>
+                <td>{{ cotacao.observacoes|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p>Nenhuma cotação registrada para este passeio.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Página não encontrada - MONITOUR{% endblock %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center py-12 px-6">
+    <div class="container mx-auto max-w-4xl">
+        <div class="text-center">
+            <!-- Ilustração 404 -->
+            <div class="mb-8">
+                <div class="inline-block relative">
+                    <!-- Número 404 estilizado -->
+                    <div class="text-8xl md:text-9xl font-bold text-primary opacity-20 select-none">404</div>
+                    
+                    <!-- Ícone de avião "perdido" -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="animate-bounce">
+                            <i class="fas fa-plane text-6xl text-primary transform rotate-12"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Título e Mensagem -->
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-secondary mb-6">
+                    Oops! Página não encontrada
+                </h1>
+                <p class="text-xl text-gray-600 mb-4">
+                    Parece que este destino não existe em nossos mapas...
+                </p>
+                <p class="text-lg text-gray-500">
+                    A página que você está procurando pode ter sido movida, removida ou não existe.
+                </p>
+            </div>
+            
+            <!-- Ações Sugeridas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Voltar ao Início -->
+                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="mb-4">
+                        <i class="fas fa-home text-3xl text-primary group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary mb-3">Página Inicial</h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        Volte para o início e descubra nossos destinos incríveis
+                    </p>
+                    <a href="{% url 'core:home' %}" 
+                       class="inline-flex items-center bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg transition-colors font-semibold">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Ir para Home
+                    </a>
+                </div>
+                
+                <!-- Explorar Pacotes -->
+                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="mb-4">
+                        <i class="fas fa-suitcase-rolling text-3xl text-primary group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary mb-3">Nossos Pacotes</h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        Explore nossos pacotes turísticos e encontre sua próxima aventura
+                    </p>
+                    <a href="{% url 'packages:package_list' %}" 
+                       class="inline-flex items-center bg-secondary hover:bg-blue-800 text-white px-6 py-3 rounded-lg transition-colors font-semibold">
+                        <i class="fas fa-search mr-2"></i>
+                        Ver Pacotes
+                    </a>
+                </div>
+                
+                <!-- Ler Blog -->
+                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="mb-4">
+                        <i class="fas fa-newspaper text-3xl text-primary group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary mb-3">Blog de Viagens</h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        Leia nossas dicas e histórias de viagem inspiradoras
+                    </p>
+                    <a href="{% url 'blog:post_list' %}" 
+                       class="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold">
+                        <i class="fas fa-book mr-2"></i>
+                        Ler Blog
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Busca Rápida -->
+            <div class="bg-light-blue rounded-xl p-8 mb-8">
+                <h3 class="text-xl font-semibold text-secondary mb-4">
+                    Ou procure por algo específico:
+                </h3>
+                <form method="get" action="{% url 'packages:package_list' %}" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input type="text" 
+                           name="search" 
+                           placeholder="Ex: Praia, Montanha, Aventura..." 
+                           class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button type="submit" 
+                            class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Buscar
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Links Rápidos -->
+            <div class="text-center">
+                <h4 class="text-lg font-semibold text-secondary mb-4">Links Úteis:</h4>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="{% url 'core:about' %}" 
+                       class="text-primary hover:text-secondary transition-colors font-medium">
+                        Sobre Nós
+                    </a>
+                    <span class="text-gray-300">•</span>
+                    <a href="{% url 'core:contact' %}" 
+                       class="text-primary hover:text-secondary transition-colors font-medium">
+                        Contato
+                    </a>
+                    <span class="text-gray-300">•</span>
+                    <a href="https://wa.me/{{ site_settings.whatsapp }}" 
+                       target="_blank"
+                       class="text-primary hover:text-secondary transition-colors font-medium">
+                        WhatsApp
+                    </a>
+                    <span class="text-gray-300">•</span>
+                    <a href="mailto:{{ site_settings.email }}" 
+                       class="text-primary hover:text-secondary transition-colors font-medium">
+                        Email
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Animações CSS customizadas -->
+<style>
+@keyframes float {
+    0% { transform: translateY(0px) rotate(12deg); }
+    50% { transform: translateY(-10px) rotate(12deg); }
+    100% { transform: translateY(0px) rotate(12deg); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Aplicar animação ao avião */
+.fa-plane {
+    animation: float 3s ease-in-out infinite;
+}
+</style>
+{% endblock %}

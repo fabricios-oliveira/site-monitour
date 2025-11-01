@@ -1,0 +1,153 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .seatmap-container { text-align: center; }
+    .bus { border: 2px solid #333; padding: 20px; display: inline-block; background: #f0f0f0; border-radius: 10px; }
+    .row { display: flex; justify-content: center; margin-bottom: 10px; }
+    .seat-group { display: flex; }
+    .seat, .aisle { width: 40px; height: 40px; margin: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; border-radius: 5px; }
+    .seat { border: 1px solid #999; cursor: pointer; }
+    .seat.free { background-color: #ccc; color: #333; }
+    .seat.occupied { background-color: #28a745; color: white; font-weight: bold; flex-direction: column; line-height: 1.1; }
+    .aisle { visibility: hidden; } /* Corredor invisível para criar espaço */
+
+    /* Estilo do Modal */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+    #cliente-select { width: 100%; }
+    .seat-name {
+        font-size: 9px;
+        word-break: break-word;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+    <p><strong>Passeio:</strong> {{ veiculo_passeio.passeio.titulo }}</p>
+
+    <div class="seatmap-container">
+        <div class="bus">
+            {% for fileira in layout %}
+            <div class="row">
+                {% for grupo in fileira.grupos %}
+                    <div class="seat-group">
+                    {% for assento in grupo %}
+                        {% if assento.corredor %}
+                            <div class="aisle"></div>
+                        {% else %}
+                            <div class="seat {% if assento.ocupado %}occupied{% else %}free{% endif %}" 
+                                 data-seat-number="{{ assento.numero }}"
+                                 data-cliente-id="{{ assento.cliente_id }}"
+                                 title="{% if assento.ocupado %}Ocupado por: {{ assento.cliente_nome }}{% else %}Livre{% endif %}">
+                                <span>{{ assento.numero }}</span>
+                                {% if assento.ocupado %}
+                                <span class="seat-name">{{ assento.cliente_nome|truncatechars:8 }}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Botão de Impressão -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="window.print()" class="button">Imprimir Mapa</button>
+    </div>
+</div>
+
+<!-- O Modal -->
+<div id="seatModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="modal-title">Editar Assento </h2>
+    <form id="seat-form">
+        {% csrf_token %}
+        <input type="hidden" id="veiculo-passeio-id" name="veiculo_passeio_id" value="{{ veiculo_passeio.id }}">
+        <input type="hidden" id="seat-number-input" name="numero_assento">
+        
+        <p>Selecione o cliente para este assento:</p>
+        <select id="cliente-select" name="cliente_id">
+            <option value="">-- Desocupar Assento --</option>
+            {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit" class="button default">Salvar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Inicializa o Select2 para busca de clientes
+    $('#cliente-select').select2();
+
+    var modal = document.getElementById("seatModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    // Abrir o modal ao clicar em um assento
+    $('.seat').on('click', function() {
+        var seatNumber = $(this).data('seat-number');
+        var clienteId = $(this).data('cliente-id');
+
+        $('#modal-title').text('Editar Assento ' + seatNumber);
+        $('#seat-number-input').val(seatNumber);
+        $('#cliente-select').val(clienteId).trigger('change'); // Atualiza o Select2
+        
+        modal.style.display = "block";
+    });
+
+    // Fechar o modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Submeter o formulário do modal via AJAX
+    $('#seat-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'passeios:salvar_assento' %}",
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                    location.reload(); // Recarrega a página para ver a mudança
+                } else {
+                    alert('Erro: ' + response.message);
+                }
+            },
+            error: function(response) {
+                alert('Ocorreu um erro no servidor.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

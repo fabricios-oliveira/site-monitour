@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if search_query %}
+        Busca por "{{ search_query }}" - Blog MONITOUR
+    {% elif current_category %}
+        {{ current_category.name }} - Blog MONITOUR
+    {% else %}
+        Blog - MONITOUR
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg py-20">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl font-bold text-white mb-6">
+                {% if search_query %}
+                    Resultados para "{{ search_query }}"
+                {% elif current_category %}
+                    {{ current_category.name }}
+                {% else %}
+                    Blog MONITOUR
+                {% endif %}
+            </h1>
+            <p class="text-xl text-white leading-relaxed">
+                {% if current_category and current_category.description %}
+                    {{ current_category.description }}
+                {% else %}
+                    Dicas, destinos incríveis e tudo sobre o mundo das viagens. 
+                    Inspire-se e planeje sua próxima aventura!
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Content -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                
+                <!-- Search and Filters -->
+                <div class="mb-12">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <!-- Search -->
+                            <div class="flex-1">
+                                <form method="get" class="flex">
+                                    <input type="text" 
+                                           name="q" 
+                                           placeholder="Buscar no blog..." 
+                                           value="{{ search_query|default:'' }}"
+                                           class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <button type="submit" 
+                                            class="bg-primary hover:bg-pink-600 text-white px-6 py-2 rounded-r-lg transition-colors">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <!-- Category Filter -->
+                            <div>
+                                <select onchange="window.location.href=this.value" 
+                                        class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="{% url 'blog:post_list' %}">Todas as Categorias</option>
+                                    {% for category in categories %}
+                                        <option value="{% url 'blog:post_list' %}?category={{ category.slug }}" 
+                                                {% if current_category and current_category.slug == category.slug %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Posts Grid -->
+                {% if page_obj %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        {% for post in page_obj %}
+                        <article class="bg-white rounded-xl shadow-lg overflow-hidden card-hover animate-on-scroll">
+                            {% if post.featured_image %}
+                                <img src="{{ post.featured_image.url }}" 
+                                     alt="{{ post.title }}" 
+                                     class="w-full h-48 object-cover">
+                            {% else %}
+                                <div class="w-full h-48 bg-gradient-to-r from-secondary to-primary flex items-center justify-center">
+                                    <i class="fas fa-blog text-white text-4xl"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    {% if post.category %}
+                                        <span class="bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium">
+                                            {{ post.category.name }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if post.featured %}
+                                        <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                                            <i class="fas fa-star mr-1"></i> Destaque
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <h2 class="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
+                                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                                </h2>
+                                
+                                <p class="text-gray-600 mb-4 line-clamp-3">{{ post.excerpt }}</p>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-calendar-alt mr-2"></i>
+                                        {{ post.published_at|date:"d/m/Y" }}
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-user mr-1"></i>
+                                        {{ post.author.get_full_name|default:post.author.username }}
+                                    </div>
+                                    
+                                    <a href="{{ post.get_absolute_url }}" 
+                                       class="text-primary hover:text-pink-600 font-medium">
+                                        Ler mais <i class="fas fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <div class="flex justify-center">
+                        <nav class="flex items-center space-x-2">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category.slug }}{% endif %}" 
+                                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <span class="px-4 py-2 bg-primary text-white rounded-lg font-medium">{{ num }}</span>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category.slug }}{% endif %}" 
+                                       class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category.slug }}{% endif %}" 
+                                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                    {% endif %}
+                    
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="text-center py-20">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-search text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-600 mb-4">
+                            {% if search_query %}
+                                Nenhum resultado encontrado
+                            {% else %}
+                                Nenhum post encontrado
+                            {% endif %}
+                        </h3>
+                        <p class="text-gray-500 mb-8">
+                            {% if search_query %}
+                                Tente usar outros termos de busca ou navegue pelas categorias.
+                            {% else %}
+                                Ainda estamos preparando conteúdo incrível para você!
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'blog:post_list' %}" class="btn-primary">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Ver Todos os Posts
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                
+                <!-- Featured Posts -->
+                {% if featured_posts %}
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8 animate-on-scroll">
+                    <h3 class="text-xl font-bold text-secondary mb-6">
+                        <i class="fas fa-star text-primary mr-2"></i>
+                        Posts em Destaque
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        {% for post in featured_posts %}
+                        <div class="flex items-start space-x-3">
+                            {% if post.featured_image %}
+                                <img src="{{ post.featured_image.url }}" 
+                                     alt="{{ post.title }}" 
+                                     class="w-16 h-16 object-cover rounded-lg">
+                            {% else %}
+                                <div class="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-blog text-white"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="flex-1">
+                                <h4 class="font-medium text-secondary hover:text-primary transition-colors">
+                                    <a href="{{ post.get_absolute_url }}" class="line-clamp-2">{{ post.title }}</a>
+                                </h4>
+                                <p class="text-sm text-gray-500 mt-1">{{ post.published_at|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Categories -->
+                {% if categories %}
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8 animate-on-scroll">
+                    <h3 class="text-xl font-bold text-secondary mb-6">
+                        <i class="fas fa-folder text-primary mr-2"></i>
+                        Categorias
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <a href="{% url 'blog:post_list' %}" 
+                           class="block px-4 py-2 rounded-lg hover:bg-light-blue transition-colors
+                                  {% if not current_category %}bg-light-blue text-primary font-medium{% else %}text-gray-600{% endif %}">
+                            <i class="fas fa-th-large mr-2"></i>
+                            Todas as Categorias
+                        </a>
+                        
+                        {% for category in categories %}
+                        <a href="{% url 'blog:post_list' %}?category={{ category.slug }}" 
+                           class="block px-4 py-2 rounded-lg hover:bg-light-blue transition-colors
+                                  {% if current_category and current_category.slug == category.slug %}bg-light-blue text-primary font-medium{% else %}text-gray-600{% endif %}">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Newsletter -->
+                {% if site_settings.show_newsletter %}
+                <div class="bg-gradient-to-br from-primary to-secondary rounded-xl p-6 text-white animate-on-scroll">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Newsletter
+                    </h3>
+                    
+                    <p class="mb-6 text-pink-100">
+                        Receba dicas exclusivas e ofertas especiais diretamente no seu email!
+                    </p>
+                    
+                    <form method="post" action="{% url 'core:newsletter_signup' %}">
+                        {% csrf_token %}
+                        <div class="space-y-3">
+                            <input type="email" 
+                                   name="email" 
+                                   placeholder="Seu melhor email" 
+                                   required
+                                   class="w-full px-4 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white">
+                            <button type="submit" 
+                                    class="w-full bg-white text-primary px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                Inscrever-se
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

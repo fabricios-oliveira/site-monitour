@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} | Sistema Financeiro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            color: #333;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+        }
+        .sidebar h2 {
+            text-align: center;
+            color: #ecf0f1;
+            margin-bottom: 30px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li a {
+            display: block;
+            color: #bdc3c7;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar ul li a:hover, .sidebar ul li a.active {
+            background-color: #34495e;
+            color: white;
+        }
+        .sidebar .back-link a {
+            position: absolute;
+            bottom: 20px;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+        /* Reutilizando estilos do dashboard principal para consistência */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .kpi-card { background-color: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kpi-card .icon { font-size: 2.5em; width: 50px; text-align: center; color: #3498db; }
+        .kpi-card .info .number { font-size: 2em; font-weight: 600; }
+        .kpi-card .info .label { font-size: 1em; color: #6c757d; }
+        /* Estilos para formulários e tabelas */
+        #content-main { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        input[type="submit"] { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2><i class="fas fa-chart-line"></i> Financeiro</h2>
+        <ul>
+            <li><a href="{% url 'financas:dashboard_financeiro' %}" class="{% if request.resolver_match.url_name == 'dashboard_financeiro' %}active{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="{% url 'financas:upload_extrato' %}" class="{% if request.resolver_match.url_name == 'upload_extrato' %}active{% endif %}"><i class="fas fa-upload"></i> Importar Extrato</a></li>
+            <li><a href="{% url 'financas:lista_transacoes' %}" class="{% if request.resolver_match.url_name == 'lista_transacoes' %}active{% endif %}"><i class="fas fa-list"></i> Ver Transações</a></li>
+            <li><a href="{% url 'admin:financas_regra_changelist' %}"><i class="fas fa-cogs"></i> Gerenciar Regras</a></li>
+        </ul>
+        <div class="back-link">
+            <a href="{% url 'core:dashboard' %}"><i class="fas fa-arrow-left"></i> Voltar ao Sistema Principal</a>
+        </div>
+    </div>
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

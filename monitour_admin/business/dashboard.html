@@ -1,0 +1,238 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Dashboard Principal{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- Font Awesome para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #007bff;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --card-bg: #fff;
+        --card-border: #dee2e6;
+        --text-color: #495057;
+        --text-muted: #6c757d;
+    }
+
+    #content-main {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .kpi-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .kpi-card .icon {
+        font-size: 3em;
+        width: 60px;
+        text-align: center;
+    }
+
+    .kpi-card .icon.clientes { color: var(--primary-color); }
+    .kpi-card .icon.passeios { color: var(--success-color); }
+    .kpi-card .icon.fornecedores { color: var(--info-color); }
+    .kpi-card .icon.inscricoes { color: var(--warning-color); }
+
+    .kpi-card .info .number {
+        font-size: 2.5em;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .kpi-card .info .label {
+        font-size: 1em;
+        color: var(--text-muted);
+    }
+
+    .dashboard-section {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .dashboard-section h2 {
+        margin-top: 0;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        color: var(--text-color);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .dashboard-table th, .dashboard-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .dashboard-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .dashboard-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .dashboard-table .actions a {
+        margin-right: 8px;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    .dashboard-table .actions a:hover {
+        text-decoration: underline;
+    }
+
+    .status-risco {
+        color: var(--danger-color);
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+
+    <!-- Grid de KPIs -->
+    <div class="dashboard-grid">
+        <div class="kpi-card">
+            <div class="icon clientes"><i class="fas fa-users"></i></div>
+            <div class="info">
+                <div class="number">{{ total_clientes }}</div>
+                <div class="label">Clientes Cadastrados</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="icon passeios"><i class="fas fa-route"></i></div>
+            <div class="info">
+                <div class="number">{{ total_passeios_agendados }}</div>
+                <div class="label">Passeios Agendados</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="icon fornecedores"><i class="fas fa-truck-moving"></i></div>
+            <div class="info">
+                <div class="number">{{ total_fornecedores }}</div>
+                <div class="label">Fornecedores</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="icon inscricoes"><i class="fas fa-ticket-alt"></i></div>
+            <div class="info">
+                <div class="number">{{ inscricoes_recentes }}</div>
+                <div class="label">Inscrições (Últimos 7 dias)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Lotação -->
+    <div class="dashboard-section">
+        <h2><i class="fas fa-chart-bar"></i> Lotação dos Próximos Passeios</h2>
+        <canvas id="lotaçaoChart"></canvas>
+    </div>
+
+    <!-- Passeios que Requerem Atenção -->
+    {% if passeios_em_risco %}
+    <div class="dashboard-section">
+        <h2 class="status-risco"><i class="fas fa-exclamation-triangle"></i> Passeios que Requerem Atenção</h2>
+        <p>Estes passeios estão abaixo da lotação mínima desejada.</p>
+        <div class="table-responsive">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Passeio</th>
+                        <th>Data</th>
+                        <th>Inscrições / Mínimo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for passeio in passeios_em_risco %}
+                    <tr>
+                        <td>{{ passeio.titulo }}</td>
+                        <td>{{ passeio.data_ida|date:"d/m/Y" }}</td>
+                        <td><span class="status-risco">{{ passeio.num_inscricoes }} / {{ passeio.lotacao_minima_desejada }}</span></td>
+                        <td class="actions"><a href="{% url 'admin:passeios_passeio_change' passeio.id %}">Editar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<!-- Chart.js para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('lotaçaoChart').getContext('2d');
+    const chartData = JSON.parse('{{ chart_data_json|safe }}');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Inscrições vs. Capacidade'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.monitour.com.br/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /media/private/
+
+# Allow important pages
+Allow: /
+Allow: /pacotes/
+Allow: /blog/
+Allow: /sobre/
+Allow: /contato/

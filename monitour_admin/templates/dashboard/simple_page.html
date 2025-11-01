@@ -1,0 +1,29 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-3xl font-bold text-monitour-blue">{{ page_title }}</h2>
+</div>
+
+<div class="bg-white p-8 rounded-lg shadow-md text-center">
+    <div class="mb-4">
+        <span class="text-6xl">🚧</span>
+    </div>
+    <h3 class="text-xl font-bold text-monitour-blue mb-2">{{ message }}</h3>
+    <p class="text-gray-600 mb-6">Esta seção será implementada em breve.</p>
+    
+    <div class="space-y-2">
+        <a href="{% url 'dashboard:dashboard' %}" 
+           class="inline-block bg-monitour-pink hover:bg-pink-600 text-white px-6 py-2 rounded transition duration-300">
+            ← Voltar ao Dashboard
+        </a>
+        <br>
+        <a href="/api/" target="_blank"
+           class="inline-block bg-monitour-blue hover:bg-blue-800 text-white px-6 py-2 rounded transition duration-300">
+            🔌 Ver API
+        </a>
+    </div>
+</div>
+{% endblock %}

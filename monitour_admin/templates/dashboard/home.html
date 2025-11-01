@@ -1,0 +1,168 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Dashboard Principal{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-3xl font-bold text-monitour-blue">Dashboard - Sistema MONITOUR</h2>
+    <p class="text-gray-600">Visão geral do sistema de gestão turística</p>
+</div>
+
+<!-- Cards de Estatísticas -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-full">
+                <span class="text-2xl">🎒</span>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Total de Pacotes</p>
+                <p class="text-2xl font-bold text-monitour-blue">{{ total_packages }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-full">
+                <span class="text-2xl">✅</span>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Pacotes Ativos</p>
+                <p class="text-2xl font-bold text-green-600">{{ active_packages }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-full">
+                <span class="text-2xl">💰</span>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Total de Vendas</p>
+                <p class="text-2xl font-bold text-yellow-600">{{ total_sales }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center">
+            <div class="p-3 bg-red-100 rounded-full">
+                <span class="text-2xl">📧</span>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Consultas Pendentes</p>
+                <p class="text-2xl font-bold text-red-600">{{ pending_inquiries }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Receita do Mês -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-bold text-monitour-blue mb-4">💵 Receita do Mês</h3>
+        <p class="text-3xl font-bold text-green-600">R$ {{ monthly_revenue|floatformat:2 }}</p>
+        <p class="text-sm text-gray-600 mt-2">Vendas pagas e concluídas</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-bold text-monitour-blue mb-4">🚀 Acesso Rápido</h3>
+        <div class="space-y-2">
+            <a href="{% url 'dashboard:package_create' %}" 
+               class="block bg-monitour-pink hover:bg-pink-600 text-white px-4 py-2 rounded text-center transition duration-300">
+                + Novo Pacote
+            </a>
+            <a href="/api/packages/" target="_blank"
+               class="block bg-monitour-blue hover:bg-blue-800 text-white px-4 py-2 rounded text-center transition duration-300">
+                🔌 Ver API
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Vendas Recentes e Consultas -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Vendas Recentes -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-bold text-monitour-blue mb-4">💰 Vendas Recentes</h3>
+        {% if recent_sales %}
+            <div class="space-y-3">
+                {% for sale in recent_sales %}
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <div>
+                            <p class="font-semibold">{{ sale.customer_name }}</p>
+                            <p class="text-sm text-gray-600">{{ sale.package.title }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-green-600">R$ {{ sale.total_amount }}</p>
+                            <p class="text-xs text-gray-500">{{ sale.created_at|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">Nenhuma venda recente</p>
+        {% endif %}
+        <div class="mt-4">
+            <a href="{% url 'dashboard:sale_list' %}" 
+               class="text-monitour-pink hover:text-pink-600 font-semibold">
+                Ver todas as vendas →
+            </a>
+        </div>
+    </div>
+
+    <!-- Consultas Recentes -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-bold text-monitour-blue mb-4">📧 Consultas Recentes</h3>
+        {% if recent_inquiries %}
+            <div class="space-y-3">
+                {% for inquiry in recent_inquiries %}
+                    <div class="p-3 bg-gray-50 rounded">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-semibold">{{ inquiry.name }}</p>
+                                <p class="text-sm text-gray-600 truncate">{{ inquiry.subject }}</p>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded
+                                {% if inquiry.status == 'new' %}bg-red-100 text-red-600{% endif %}
+                                {% if inquiry.status == 'resolved' %}bg-green-100 text-green-600{% endif %}">
+                                {{ inquiry.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">{{ inquiry.created_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">Nenhuma consulta recente</p>
+        {% endif %}
+        <div class="mt-4">
+            <a href="{% url 'dashboard:inquiry_list' %}" 
+               class="text-monitour-pink hover:text-pink-600 font-semibold">
+                Ver todas as consultas →
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Status da API -->
+<div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold text-monitour-blue mb-4">🔌 Status da API</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="text-center p-4 bg-green-50 rounded">
+            <p class="text-sm text-gray-600">Health Check</p>
+            <a href="/api/health/" target="_blank" class="text-green-600 font-bold">/api/health/</a>
+        </div>
+        <div class="text-center p-4 bg-blue-50 rounded">
+            <p class="text-sm text-gray-600">Pacotes API</p>
+            <a href="/api/packages/" target="_blank" class="text-blue-600 font-bold">/api/packages/</a>
+        </div>
+        <div class="text-center p-4 bg-purple-50 rounded">
+            <p class="text-sm text-gray-600">Admin Django</p>
+            <a href="/admin/" target="_blank" class="text-purple-600 font-bold">/admin/</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

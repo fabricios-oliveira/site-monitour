@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Pagamento Realizado com Sucesso{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 100px auto; text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    
+    <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+    
+    <h1 style="color: #28a745; margin-bottom: 10px;">Pagamento Aprovado!</h1>
+    
+    <p style="font-size: 16px; color: #666; margin-bottom: 30px;">
+        Sua inscrição foi processada com sucesso. 
+        Um email de confirmação foi enviado para você.
+    </p>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: left;">
+        <p><strong>Próximas etapas:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Verifique seu email para informações adicionais</li>
+            <li>Guarde seu número de matrícula</li>
+            <li>Retornaremos com detalhes da viagem em breve</li>
+        </ul>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <a href="/gerencia/" style="padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            📊 Ir para Dashboard
+        </a>
+        <a href="{% url 'passeios:venda_principal' %}" style="padding: 12px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            🎫 Nova Venda
+        </a>
+    </div>
+</div>
+{% endblock %}

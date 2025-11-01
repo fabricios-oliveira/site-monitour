@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if query %}
+        Resultados para "{{ query }}" - MONITOUR
+    {% else %}
+        Buscar - MONITOUR
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section de Busca -->
+<section class="py-16 bg-gradient-to-br from-light-blue to-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl font-bold text-secondary mb-6">
+                {% if query %}
+                    Resultados da Busca
+                {% else %}
+                    Encontre sua próxima aventura
+                {% endif %}
+            </h1>
+            
+            {% if query %}
+                <p class="text-lg text-gray-600 mb-8">
+                    Resultados para <strong>"{{ query }}"</strong>
+                    {% if results.total > 0 %}
+                        - {{ results.total }} resultado{{ results.total|pluralize }}
+                    {% else %}
+                        - Nenhum resultado encontrado
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="text-lg text-gray-600 mb-8">
+                    Pesquise por destinos, pacotes, posts do blog e muito mais
+                </p>
+            {% endif %}
+            
+            <!-- Formulário de Busca Principal -->
+            <form method="get" action="{% url 'core:search' %}" class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <input type="text" 
+                           name="q" 
+                           value="{{ query }}"
+                           placeholder="Ex: Paris, Fernando de Noronha, dicas de viagem..."
+                           class="w-full pl-12 pr-20 py-4 text-lg border-2 border-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-primary text-xl"></i>
+                    <button type="submit" 
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md transition-colors font-semibold">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% if query %}
+    {% if results.total > 0 %}
+        <!-- Resultados da Busca -->
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <!-- Filtros de Tipo de Conteúdo -->
+                <div class="max-w-6xl mx-auto mb-12">
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button onclick="showAllResults()" 
+                                class="filter-btn active bg-primary text-white px-6 py-2 rounded-full font-semibold transition-colors"
+                                data-filter="all">
+                            Todos ({{ results.total }})
+                        </button>
+                        {% if results.packages %}
+                            <button onclick="filterResults('packages')" 
+                                    class="filter-btn bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-6 py-2 rounded-full font-semibold transition-colors"
+                                    data-filter="packages">
+                                Pacotes ({{ results.packages|length }})
+                            </button>
+                        {% endif %}
+                        {% if results.posts %}
+                            <button onclick="filterResults('posts')" 
+                                    class="filter-btn bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-6 py-2 rounded-full font-semibold transition-colors"
+                                    data-filter="posts">
+                                Blog ({{ results.posts|length }})
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Resultados: Pacotes Turísticos -->
+                {% if results.packages %}
+                <div class="result-section" data-section="packages">
+                    <div class="max-w-6xl mx-auto mb-16">
+                        <h2 class="text-2xl font-bold text-secondary mb-8 flex items-center">
+                            <i class="fas fa-suitcase-rolling text-primary mr-3"></i>
+                            Pacotes Turísticos ({{ results.packages|length }})
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {% for package in results.packages %}
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                                {% if package.image %}
+                                    <img src="{{ package.image.url }}" 
+                                         alt="{{ package.name }}" 
+                                         class="w-full h-48 object-cover">
+                                {% else %}
+                                    <div class="w-full h-48 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                                        <i class="fas fa-mountain text-4xl text-white opacity-50"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="bg-light-blue text-secondary text-xs px-2 py-1 rounded-full font-semibold">
+                                            {{ package.destination.name }}
+                                        </span>
+                                        <div class="flex items-center text-sm text-gray-600">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ package.duration }} dias
+                                        </div>
+                                    </div>
+                                    
+                                    <h3 class="text-xl font-bold text-secondary mb-3 line-clamp-2">
+                                        {{ package.name }}
+                                    </h3>
+                                    
+                                    <p class="text-gray-600 mb-4 line-clamp-3">
+                                        {{ package.description|truncatewords:20 }}
+                                    </p>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            {% if package.discount_percentage > 0 %}
+                                                <div class="flex items-center">
+                                                    <span class="text-sm text-gray-500 line-through mr-2">
+                                                        R$ {{ package.price|floatformat:2 }}
+                                                    </span>
+                                                    <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                                        -{{ package.discount_percentage }}%
+                                                    </span>
+                                                </div>
+                                                <div class="text-xl font-bold text-primary">
+                                                    R$ {{ package.final_price|floatformat:2 }}
+                                                </div>
+                                            {% else %}
+                                                <div class="text-xl font-bold text-primary">
+                                                    R$ {{ package.price|floatformat:2 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <a href="{% url 'packages:package_detail' package.pk %}" 
+                                           class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition-colors font-semibold">
+                                            Ver Detalhes
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Resultados: Posts do Blog -->
+                {% if results.posts %}
+                <div class="result-section" data-section="posts">
+                    <div class="max-w-6xl mx-auto">
+                        <h2 class="text-2xl font-bold text-secondary mb-8 flex items-center">
+                            <i class="fas fa-newspaper text-primary mr-3"></i>
+                            Posts do Blog ({{ results.posts|length }})
+                        </h2>
+                        
+                        <div class="space-y-6">
+                            {% for post in results.posts %}
+                            <article class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                                <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+                                    <!-- Imagem do Post -->
+                                    <div class="lg:w-64 flex-shrink-0">
+                                        {% if post.featured_image %}
+                                            <img src="{{ post.featured_image.url }}" 
+                                                 alt="{{ post.title }}" 
+                                                 class="w-full h-40 lg:h-32 object-cover rounded-lg">
+                                        {% else %}
+                                            <div class="w-full h-40 lg:h-32 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-newspaper text-3xl text-white opacity-50"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Conteúdo do Post -->
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full font-semibold">
+                                                {{ post.category.name }}
+                                            </span>
+                                            <div class="flex items-center text-sm text-gray-600">
+                                                <i class="fas fa-calendar mr-2"></i>
+                                                {{ post.published_at|date:"d/m/Y" }}
+                                                <span class="mx-2">•</span>
+                                                <i class="fas fa-clock mr-2"></i>
+                                                {{ post.reading_time }} min de leitura
+                                            </div>
+                                        </div>
+                                        
+                                        <h3 class="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
+                                            <a href="{% url 'blog:post_detail' post.slug %}">
+                                                {{ post.title }}
+                                            </a>
+                                        </h3>
+                                        
+                                        {% if post.excerpt %}
+                                            <p class="text-gray-600 mb-4">
+                                                {{ post.excerpt|truncatewords:25 }}
+                                            </p>
+                                        {% else %}
+                                            <p class="text-gray-600 mb-4">
+                                                {{ post.content|striptags|truncatewords:25 }}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center text-sm text-gray-600">
+                                                <i class="fas fa-user mr-2"></i>
+                                                {{ post.author.get_full_name|default:post.author.username }}
+                                            </div>
+                                            <a href="{% url 'blog:post_detail' post.slug %}" 
+                                               class="bg-secondary hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors font-semibold">
+                                                Ler Mais
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    {% else %}
+        <!-- Nenhum Resultado Encontrado -->
+        <section class="py-16">
+            <div class="container mx-auto px-6 text-center">
+                <div class="max-w-2xl mx-auto">
+                    <div class="mb-8">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-6"></i>
+                        <h2 class="text-3xl font-bold text-secondary mb-4">
+                            Nenhum resultado encontrado
+                        </h2>
+                        <p class="text-lg text-gray-600">
+                            Não encontramos nada para <strong>"{{ query }}"</strong>. 
+                            Tente uma nova busca com termos diferentes.
+                        </p>
+                    </div>
+                    
+                    <!-- Sugestões de Busca -->
+                    <div class="bg-light-blue rounded-xl p-8 mb-8">
+                        <h3 class="text-xl font-semibold text-secondary mb-4">
+                            Sugestões de busca:
+                        </h3>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <a href="{% url 'core:search' %}?q=Rio de Janeiro" 
+                               class="bg-white hover:bg-primary hover:text-white text-gray-700 px-4 py-2 rounded-full transition-colors">
+                                Rio de Janeiro
+                            </a>
+                            <a href="{% url 'core:search' %}?q=Fernando de Noronha" 
+                               class="bg-white hover:bg-primary hover:text-white text-gray-700 px-4 py-2 rounded-full transition-colors">
+                                Fernando de Noronha
+                            </a>
+                            <a href="{% url 'core:search' %}?q=Paris" 
+                               class="bg-white hover:bg-primary hover:text-white text-gray-700 px-4 py-2 rounded-full transition-colors">
+                                Paris
+                            </a>
+                            <a href="{% url 'core:search' %}?q=dicas" 
+                               class="bg-white hover:bg-primary hover:text-white text-gray-700 px-4 py-2 rounded-full transition-colors">
+                                Dicas de Viagem
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Links Alternativos -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <a href="{% url 'packages:package_list' %}" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center">
+                            <i class="fas fa-suitcase-rolling text-3xl text-primary mb-4"></i>
+                            <h4 class="text-lg font-semibold text-secondary mb-2">
+                                Explorar Pacotes
+                            </h4>
+                            <p class="text-gray-600">
+                                Veja todos os nossos destinos disponíveis
+                            </p>
+                        </a>
+                        
+                        <a href="{% url 'blog:post_list' %}" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center">
+                            <i class="fas fa-newspaper text-3xl text-secondary mb-4"></i>
+                            <h4 class="text-lg font-semibold text-secondary mb-2">
+                                Ler Blog
+                            </h4>
+                            <p class="text-gray-600">
+                                Confira nossas dicas e histórias de viagem
+                            </p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% else %}
+    <!-- Página Inicial de Busca -->
+    <section class="py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <!-- Busca Rápida por Categorias -->
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-secondary mb-8">
+                        Busca Rápida por Categoria
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <a href="{% url 'core:search' %}?q=praia" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center group">
+                            <i class="fas fa-umbrella-beach text-3xl text-primary mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-semibold text-secondary">Praias</h4>
+                        </a>
+                        
+                        <a href="{% url 'core:search' %}?q=montanha" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center group">
+                            <i class="fas fa-mountain text-3xl text-green-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-semibold text-secondary">Montanhas</h4>
+                        </a>
+                        
+                        <a href="{% url 'core:search' %}?q=cultura" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center group">
+                            <i class="fas fa-landmark text-3xl text-purple-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-semibold text-secondary">Cultura</h4>
+                        </a>
+                        
+                        <a href="{% url 'core:search' %}?q=aventura" 
+                           class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow text-center group">
+                            <i class="fas fa-hiking text-3xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-semibold text-secondary">Aventura</h4>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Destinos Populares -->
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-secondary mb-8">
+                        Destinos Mais Buscados
+                    </h2>
+                    
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for destination in popular_destinations %}
+                            <a href="{% url 'core:search' %}?q={{ destination.name }}" 
+                               class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full hover:shadow-lg transition-all font-semibold">
+                                {{ destination.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+<!-- Scripts -->
+<script>
+// Função para filtrar resultados
+function filterResults(type) {
+    // Esconder todas as seções
+    const sections = document.querySelectorAll('.result-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Mostrar seção específica
+    const targetSection = document.querySelector(`[data-section="${type}"]`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+    
+    // Atualizar botões
+    updateFilterButtons(type);
+}
+
+function showAllResults() {
+    // Mostrar todas as seções
+    const sections = document.querySelectorAll('.result-section');
+    sections.forEach(section => {
+        section.style.display = 'block';
+    });
+    
+    // Atualizar botões
+    updateFilterButtons('all');
+}
+
+function updateFilterButtons(activeFilter) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(button => {
+        const filter = button.getAttribute('data-filter');
+        
+        if (filter === activeFilter) {
+            button.classList.remove('bg-gray-200', 'text-gray-700');
+            button.classList.add('bg-primary', 'text-white', 'active');
+        } else {
+            button.classList.remove('bg-primary', 'text-white', 'active');
+            button.classList.add('bg-gray-200', 'text-gray-700');
+        }
+    });
+}
+
+// Auto-focus no campo de busca quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="q"]');
+    if (searchInput && !searchInput.value) {
+        searchInput.focus();
+    }
+});
+
+// Melhorar UX do formulário de busca
+document.querySelector('form').addEventListener('submit', function(e) {
+    const input = this.querySelector('input[name="q"]');
+    if (input.value.trim().length < 3) {
+        e.preventDefault();
+        alert('Por favor, digite pelo menos 3 caracteres para buscar.');
+        input.focus();
+    }
+});
+</script>
+
+<style>
+/* Estilos para truncar texto */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+{% endblock %}

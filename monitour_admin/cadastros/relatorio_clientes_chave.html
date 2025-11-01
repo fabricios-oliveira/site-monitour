@@ -1,0 +1,58 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+
+    <div class="module">
+        <h2>Top 10 Clientes por Valor Gasto</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>E-mail</th>
+                    <th>Nível Fidelidade</th>
+                    <th>Total Gasto (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes_por_gasto %}
+                <tr>
+                    <td><a href="{% url 'admin:cadastros_cliente_change' cliente.pk %}">{{ cliente.nome }}</a></td>
+                    <td>{{ cliente.email }}</td>
+                    <td>{{ cliente.nivel_fidelidade }}</td>
+                    <td>{{ cliente.valor_total_gasto|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Top 10 Clientes por Número de Viagens</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>E-mail</th>
+                    <th>Nível Fidelidade</th>
+                    <th>Nº de Viagens</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes_por_viagem %}
+                <tr>
+                    <td><a href="{% url 'admin:cadastros_cliente_change' cliente.pk %}">{{ cliente.nome }}</a></td>
+                    <td>{{ cliente.email }}</td>
+                    <td>{{ cliente.nivel_fidelidade }}</td>
+                    <td>{{ cliente.num_viagens }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

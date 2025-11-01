@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils import timezone
+from django.db.models import Q
 from .models import ContactMessage, Newsletter, Testimonial, SiteSettings
 from blog.models import Post
 from packages.models import TourPackage
@@ -169,6 +172,8 @@ def terms_of_use(request):
 
 def search(request):
     """Busca global"""
+    from packages.models import Destination
+    
     site_settings = get_site_settings()
     query = request.GET.get('q', '').strip()
     
@@ -178,25 +183,30 @@ def search(request):
         'total': 0
     }
     
+    # Destinos populares para a página inicial
+    popular_destinations = Destination.objects.all()[:6]
+    
     if query and len(query) >= 3:
         # Buscar posts
         posts = Post.objects.filter(
-            status='published',
-            title__icontains=query
-        ) | Post.objects.filter(
-            status='published',
-            content__icontains=query
-        )
+            status='published'
+        ).filter(
+            Q(title__icontains=query) | 
+            Q(content__icontains=query) |
+            Q(excerpt__icontains=query) |
+            Q(category__name__icontains=query)
+        ).distinct().order_by('-published_at')
         results['posts'] = posts[:10]
         
         # Buscar pacotes
         packages = TourPackage.objects.filter(
-            status='active',
-            title__icontains=query
-        ) | TourPackage.objects.filter(
-            status='active',
-            description__icontains=query
-        )
+            status='active'
+        ).filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(destination__name__icontains=query) |
+            Q(destination__country__icontains=query)
+        ).distinct().order_by('-created_at')
         results['packages'] = packages[:10]
         
         results['total'] = len(results['posts']) + len(results['packages'])
@@ -205,6 +215,84 @@ def search(request):
         'site_settings': site_settings,
         'query': query,
         'results': results,
+        'popular_destinations': popular_destinations,
     }
     
     return render(request, 'core/search.html', context)
+
+
+@csrf_protect
+@require_http_methods(["POST"])
+def newsletter_subscribe(request):
+    """Processar inscrição na newsletter"""
+    email = request.POST.get('email', '').strip()
+    
+    if not email:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Email é obrigatório.'})
+        messages.error(request, 'Email é obrigatório.')
+        return redirect('core:home')
+    
+    # Verificar se o email já está cadastrado
+    if Newsletter.objects.filter(email=email).exists():
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Este email já está cadastrado em nossa newsletter!'})
+        messages.warning(request, 'Este email já está cadastrado em nossa newsletter!')
+        return redirect(request.META.get('HTTP_REFERER', 'core:home'))
+    
+    try:
+        # Criar inscrição
+        newsletter = Newsletter.objects.create(
+            email=email,
+            subscribed_at=timezone.now(),
+            is_active=True
+        )
+        
+        # Enviar email de boas-vindas (opcional)
+        try:
+            site_settings = get_site_settings()
+            send_mail(
+                subject=f'Bem-vindo(a) à Newsletter {site_settings.site_name}!',
+                message=f'''
+Olá!
+
+Obrigado por se inscrever em nossa newsletter! 
+
+Você receberá em primeira mão:
+• Ofertas exclusivas de pacotes turísticos
+• Dicas de viagem e destinos incríveis
+• Novidades do blog MONITOUR
+• Promoções especiais para assinantes
+
+Estamos muito felizes em tê-lo(a) conosco!
+
+Equipe MONITOUR
+{site_settings.website_url}
+                ''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print(f"Erro ao enviar email de boas-vindas: {e}")
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True, 
+                'message': 'Inscrição realizada com sucesso! Verifique seu email.'
+            })
+        
+        messages.success(request, 'Inscrição realizada com sucesso! Obrigado por se juntar à nossa newsletter.')
+        
+    except Exception as e:
+        print(f"Erro ao inscrever na newsletter: {e}")
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False, 
+                'message': 'Erro ao processar inscrição. Tente novamente.'
+            })
+        
+        messages.error(request, 'Erro ao processar inscrição. Tente novamente.')
+    
+    return redirect(request.META.get('HTTP_REFERER', 'core:home'))

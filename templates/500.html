@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Erro interno do servidor - MONITOUR{% endblock %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center py-12 px-6">
+    <div class="container mx-auto max-w-4xl">
+        <div class="text-center">
+            <!-- Ilustração 500 -->
+            <div class="mb-8">
+                <div class="inline-block relative">
+                    <!-- Número 500 estilizado -->
+                    <div class="text-8xl md:text-9xl font-bold text-red-500 opacity-20 select-none">500</div>
+                    
+                    <!-- Ícone de ferramenta "consertando" -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="animate-pulse">
+                            <i class="fas fa-tools text-6xl text-red-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Título e Mensagem -->
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-secondary mb-6">
+                    Houston, temos um problema!
+                </h1>
+                <p class="text-xl text-gray-600 mb-4">
+                    Nossos técnicos estão trabalhando para resolver este problema...
+                </p>
+                <p class="text-lg text-gray-500">
+                    Ocorreu um erro interno no servidor. Por favor, tente novamente em alguns minutos.
+                </p>
+            </div>
+            
+            <!-- Status do Sistema -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-12 max-w-2xl mx-auto">
+                <h3 class="text-xl font-semibold text-secondary mb-6 flex items-center justify-center">
+                    <i class="fas fa-server text-primary mr-3"></i>
+                    Status do Sistema
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-3 animate-pulse"></div>
+                            <span class="text-gray-700">Servidor Principal</span>
+                        </div>
+                        <span class="text-red-600 font-semibold">Problema Detectado</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">Base de Dados</span>
+                        </div>
+                        <span class="text-yellow-600 font-semibold">Verificando</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">CDN & Imagens</span>
+                        </div>
+                        <span class="text-green-600 font-semibold">Operacional</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        <span class="text-blue-800 font-semibold">Tempo estimado para correção: 15-30 minutos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ações Disponíveis -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-2xl mx-auto">
+                <!-- Tentar Novamente -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                    <div class="mb-4">
+                        <i class="fas fa-redo text-3xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary mb-3">Tentar Novamente</h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        Recarregue a página para tentar acessar novamente
+                    </p>
+                    <button onclick="window.location.reload()" 
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg transition-colors font-semibold">
+                        <i class="fas fa-refresh mr-2"></i>
+                        Recarregar Página
+                    </button>
+                </div>
+                
+                <!-- Voltar ao Início -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                    <div class="mb-4">
+                        <i class="fas fa-home text-3xl text-primary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary mb-3">Página Inicial</h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        Volte para nossa página inicial enquanto resolvemos o problema
+                    </p>
+                    <a href="{% url 'core:home' %}" 
+                       class="w-full inline-block text-center bg-primary hover:bg-primary-dark text-white px-4 py-3 rounded-lg transition-colors font-semibold">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Ir para Home
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Informações de Contato -->
+            <div class="bg-light-blue rounded-xl p-8 mb-8">
+                <h3 class="text-xl font-semibold text-secondary mb-4">
+                    Problema Urgente?
+                </h3>
+                <p class="text-gray-600 mb-6">
+                    Se você precisa de atendimento imediato, entre em contato conosco:
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/{{ site_settings.whatsapp }}" 
+                       target="_blank"
+                       class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center">
+                        <i class="fab fa-whatsapp mr-2"></i>
+                        WhatsApp
+                    </a>
+                    
+                    <!-- Telefone -->
+                    <a href="tel:{{ site_settings.phone }}" 
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center">
+                        <i class="fas fa-phone mr-2"></i>
+                        Ligar Agora
+                    </a>
+                    
+                    <!-- Email -->
+                    <a href="mailto:{{ site_settings.email }}" 
+                       class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Email
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Informação Técnica (para desenvolvedores) -->
+            {% if debug %}
+            <div class="bg-red-50 rounded-xl p-6 text-left max-w-2xl mx-auto">
+                <h4 class="text-lg font-semibold text-red-800 mb-3 flex items-center">
+                    <i class="fas fa-bug text-red-600 mr-2"></i>
+                    Informações Técnicas (Debug Mode)
+                </h4>
+                <div class="text-sm text-red-700 space-y-2">
+                    <p><strong>Erro:</strong> {{ exception }}</p>
+                    <p><strong>Horário:</strong> <span id="error-time"></span></p>
+                    <p><strong>URL:</strong> {{ request.get_full_path }}</p>
+                    <p><strong>Método:</strong> {{ request.method }}</p>
+                    <p><strong>User Agent:</strong> {{ request.META.HTTP_USER_AGENT|truncatechars:100 }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Mensagem de Agradecimento -->
+            <div class="mt-12">
+                <p class="text-gray-500">
+                    Obrigado pela sua paciência enquanto trabalhamos para resolver este problema.
+                </p>
+                <p class="text-gray-500 mt-2">
+                    — Equipe MONITOUR
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Scripts -->
+<script>
+// Mostrar horário atual do erro
+document.addEventListener('DOMContentLoaded', function() {
+    const errorTimeElement = document.getElementById('error-time');
+    if (errorTimeElement) {
+        const now = new Date();
+        errorTimeElement.textContent = now.toLocaleString('pt-BR');
+    }
+    
+    // Auto-reload a cada 2 minutos (opcional)
+    const autoReload = false; // Defina como true se quiser auto-reload
+    if (autoReload) {
+        setTimeout(function() {
+            window.location.reload();
+        }, 120000); // 2 minutos
+    }
+});
+
+// Botão de reload animado
+function animateReloadButton() {
+    const reloadBtn = document.querySelector('button[onclick="window.location.reload()"]');
+    if (reloadBtn) {
+        const icon = reloadBtn.querySelector('.fa-refresh');
+        if (icon) {
+            icon.classList.add('fa-spin');
+            setTimeout(function() {
+                icon.classList.remove('fa-spin');
+            }, 2000);
+        }
+    }
+}
+
+// Adicionar listener ao botão de reload
+document.querySelector('button[onclick="window.location.reload()"]')?.addEventListener('click', animateReloadButton);
+</script>
+
+<!-- Estilos customizados -->
+<style>
+/* Animação para o ícone de ferramenta */
+@keyframes wiggle {
+    0% { transform: rotate(-5deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(-5deg); }
+}
+
+.fa-tools {
+    animation: wiggle 2s ease-in-out infinite;
+}
+
+/* Efeito de pulso para os status dots */
+@keyframes status-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.animate-pulse {
+    animation: status-pulse 2s ease-in-out infinite;
+}
+</style>
+{% endblock %}

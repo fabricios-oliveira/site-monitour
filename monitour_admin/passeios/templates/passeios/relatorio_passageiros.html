@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Passageiros</title>
+    <style>
+      @page {
+        size: A4 landscape;
+        margin: 1cm;
+      }
+      body {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 9pt;
+        line-height: 1.2;
+        width: 100%;
+      }
+      /* Tabela de layout principal para controle total */
+      .layout-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .layout-table > tbody > tr > td {
+        vertical-align: top;
+        padding: 0;
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #333;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+      }
+      .header h1 { margin: 0; font-size: 16pt; }
+      .header h2 { margin: 2px 0 0 0; font-size: 12pt; color: #555; }
+      .info-section {
+        margin-bottom: 10px;
+        padding: 8px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+      }
+      .info-section h3 {
+        margin-top: 0;
+        font-size: 11pt;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+      }
+      .info-section p { margin: 3px 0; font-size: 8pt; }
+      
+      .passenger-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .passenger-table th, .passenger-table td {
+        border: 1px solid #ccc;
+        padding: 3px; /* Reduzindo padding da tabela */
+        text-align: left;
+        font-size: 7pt; /* Reduzindo fonte da tabela */
+      }
+      .passenger-table th { background-color: #f2f2f2; }
+
+      /* Estilos do Mapa de Assentos para PDF */
+      .bus-outline {
+        border: 2px solid #333;
+        border-radius: 15px 15px 8px 8px;
+        padding: 10px 5px;
+        background-color: #f9f9f9;
+        margin-left: 15px; /* Espaçamento entre as colunas */
+      }
+      .bus-front {
+        width: 70%;
+        height: 15px;
+        background: #ddd;
+        margin: 0 auto 10px auto;
+        border-radius: 8px 8px 0 0;
+        border: 1px solid #333;
+        border-bottom: none;
+        text-align: center;
+        line-height: 15px;
+        font-size: 7pt;
+        font-weight: bold;
+      }
+      /* Usando tabela para o layout do ônibus para máxima estabilidade */
+      .bus-table {
+        border-collapse: collapse;
+        margin: 0 auto;
+      }
+      .bus-table td {
+        padding: 0;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .seat {
+        border: 1px solid #333;
+        margin: 1px;
+        font-size: 6pt;
+        text-align: center;
+        overflow: hidden;
+        border-radius: 3px;
+        /* Tamanhos fixos e compactos para previsibilidade */
+        width: 32px;
+        height: 32px;
+      }
+      .seat-number { font-weight: bold; font-size: 8pt; display: block; }
+      .passenger-name {
+        font-size: 5.5pt;
+        word-wrap: break-word;
+        line-height: 1.1;
+        display: block;
+      }
+      .occupied { background-color: #d3d3d3; }
+    </style>
+</head>
+<body>
+    <table class="layout-table">
+        <thead>
+            <tr>
+                <th colspan="2" style="border: none; padding: 0;">
+                    <div class="header">
+                        <h1>Relatório de Viagem</h1>
+                        <h2>{{ passeio.titulo }}</h2>
+                    </div>
+                    <div class="info-section">
+                        <h3>Detalhes da Viagem</h3>
+                        <p><strong>Destino:</strong> {{ passeio.destino_formatado }} | <strong>Data:</strong> {{ passeio.data_ida|date:"d/m/Y" }}</p>
+                        {% if passeio.fornecedor_transporte %}
+                            {% with primeiro_contato=passeio.fornecedor_transporte.contatos.first %}
+                            <p><strong>Transporte:</strong> {{ passeio.fornecedor_transporte.nome_fantasia }} {% if passeio.fornecedor_transporte.cnpj %}| <strong>CNPJ:</strong> {{ passeio.fornecedor_transporte.cnpj }}{% endif %}
+                                {% if primeiro_contato %}| <strong>Contato:</strong> {{ primeiro_contato.nome }} ({{ primeiro_contato.telefone }}){% endif %}
+                            </p>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 50%;">
+                    <h3>Lista de Passageiros ({{ inscricoes.count }})</h3>
+                    <table class="passenger-table">
+                        <thead>
+                            <tr>
+                                <th>Voucher</th>
+                                <th>Nome do Passageiro</th>
+                                <th>Telefone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inscricao in inscricoes %}
+                            <tr>
+                                <td>{{ inscricao.voucher }}</td>
+                                <td>{{ inscricao.cliente.nome }}</td>
+                                <td>{{ inscricao.cliente.telefone }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3">Nenhum passageiro inscrito.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+                <td style="width: 50%;">
+                    {% if mapa_layout %}
+                    <h3>Mapa de Assentos - {{ passeio.tipo_veiculo.nome }}</h3>
+                    <div class="bus-outline">
+                        <div class="bus-front">MOTORISTA</div>
+                        <table class="bus-table">
+                            {% for fileira in mapa_layout %}
+                                <tr>
+                                    {% for grupo in fileira %}
+                                        <td>
+                                        {% for assento in grupo %}
+                                            <div class="seat {% if assento.cliente_nome %}occupied{% endif %}">
+                                                <span class="seat-number">{{ assento.numero }}</span>
+                                                <span class="passenger-name">{{ assento.cliente_nome|truncatechars:12|default:"Livre" }}</span>
+                                            </div>
+                                        {% endfor %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block userlinks %}
+    <span>
+        {% trans 'Bem-vindo(a),' %} 
+        <strong>
+            {% firstof user.get_short_name user.get_username %}
+        </strong>
+    </span>
+    | 
+    <a href="{% url 'core:docs' %}" style="color: #ff6b6b; font-weight: bold; text-decoration: none;">📚 Documentação</a>
+    | 
+    <a href="{% url 'admin:logout' %}">
+        {% trans 'Encerrar sessão' %}
+    </a>
+{% endblock %}
+

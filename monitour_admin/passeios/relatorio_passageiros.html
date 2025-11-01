@@ -1,0 +1,109 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+    <p>Use este painel para planejar os custos e a lucratividade do seu passeio.</p>
+
+    <style>
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px; }
+        .card h2 { margin-top: 0; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .card h4 { margin-bottom: 5px; margin-top: 15px; }
+        .card ul { padding-left: 20px; margin: 0; }
+        .card li { margin-bottom: 5px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item strong { font-size: 1.1em; }
+        .total { font-weight: bold; font-size: 1.3em; }
+        .lucro { color: #28a745; }
+        .prejuizo { color: #dc3545; }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>1. Custos Previstos</h2>
+            <p>Liste aqui todos os gastos planejados. Adicione cotações e gastos na <a href="{% url 'admin:passeios_passeio_change' passeio.pk %}">página de edição do passeio</a>.</p>
+            
+            <h4>Cotações de Fornecedores (Aceitas)</h4>
+            <ul>
+                {% for cotacao in custos_detalhados.cotacoes_aceitas %}
+                    <li>{{ cotacao.get_tipo_servico_display }} ({{ cotacao.fornecedor.nome_fantasia }}): <strong>R$ {{ cotacao.valor_cotado|floatformat:2 }}</strong></li>
+                {% empty %}
+                    <li>Nenhuma cotação aceita.</li>
+                {% endfor %}
+            </ul>
+
+            <h4>Gastos Internos</h4>
+            <ul>
+                {% for gasto in custos_detalhados.gastos_internos %}
+                    <li>{{ gasto.descricao }}: <strong>R$ {{ gasto.valor|floatformat:2 }}</strong></li>
+                {% empty %}
+                    <li>Nenhum gasto interno registrado.</li>
+                {% endfor %}
+            </ul>
+            <hr>
+            <div class="summary-item">
+                <span>Custo Total Previsto</span>
+                <span class="total prejuizo">R$ {{ custo_total_previsto|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2. Projeção de Receita e Lucro</h2>
+            <p>Com base nos custos e no preço do pacote, o sistema projeta sua lucratividade.</p>
+
+            <div class="summary-item">
+                <span>Preço do Pacote (base)</span>
+                <span>R$ {{ preco_base_pacote|floatformat:2 }}</span>
+            </div>
+            <div class="summary-item">
+                <span>Inscrições</span>
+                <span>{{ total_inscricoes }}</span>
+            </div>
+            <div class="summary-item">
+                <span>Receita Total Prevista</span>
+                <strong class="lucro">R$ {{ receita_total_prevista|floatformat:2 }}</strong>
+            </div>
+            <div class="summary-item">
+                <span>Custo Total Previsto</span>
+                <strong class="prejuizo">- R$ {{ custo_total_previsto|floatformat:2 }}</strong>
+            </div>
+            <hr>
+            <div class="summary-item">
+                <span>Lucro Projetado</span>
+                <span class="total {% if lucro_projetado >= 0 %}lucro{% else %}prejuizo{% endif %}">
+                    R$ {{ lucro_projetado|floatformat:2 }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Situação Financeira Atual</h2>
+        <div class="summary-item">
+            <span>Total Arrecadado (Recebido)</span>
+            <strong class="lucro">R$ {{ total_arrecadado|floatformat:2 }}</strong>
+        </div>
+        <div class="summary-item">
+            <span>Saldo a Receber</span>
+            <strong>R$ {{ saldo_a_receber|floatformat:2 }}</strong>
+        </div>
+        <hr>
+        <div class="summary-item">
+            <span>Resultado Atual (Arrecadado - Custos)</span>
+            <strong class="{% if lucro_atual >= 0 %}lucro{% else %}prejuizo{% endif %}">R$ {{ lucro_atual|floatformat:2 }}</strong>
+        </div>
+    </div>
+
+    <div class="module">
+        <p><a href="{% url 'admin:passeios_passeio_changelist' %}" class="button">Voltar para a lista de passeios</a></p>
+    </div>
+</div>
+{% endblock %}

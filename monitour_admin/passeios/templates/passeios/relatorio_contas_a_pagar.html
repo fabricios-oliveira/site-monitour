@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+    <p>Este relatório lista todos os serviços de fornecedores contratados (cotações aceitas) que ainda possuem saldo a ser pago.</p>
+
+    {% if contas_a_pagar %}
+    <div class="results">
+        <table id="result_list">
+            <thead>
+                <tr>
+                    <th>Passeio</th>
+                    <th>Fornecedor</th>
+                    <th>Serviço</th>
+                    <th>Valor Total (R$)</th>
+                    <th>Valor Pago (R$)</th>
+                    <th>Saldo a Pagar (R$)</th>
+                    <th>Vencimento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conta in contas_a_pagar %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>{{ conta.passeio.titulo }}</td>
+                    <td>{{ conta.fornecedor.nome_fantasia }}</td>
+                    <td>{{ conta.get_tipo_servico_display }}</td>
+                    <td>{{ conta.valor_cotado|floatformat:2 }}</td>
+                    <td>{{ conta.total_pago|default:"0.00"|floatformat:2 }}</td>
+                    <td style="color: red; font-weight: bold;">{{ conta.saldo_a_pagar|floatformat:2 }}</td>
+                    <td>{{ conta.data_vencimento_pagamento|date:"d/m/Y"|default:"-" }}</td>
+                    <td><a href="{% url 'admin:passeios_cotacao_change' conta.pk %}">Ver/Pagar</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>Não há contas a pagar no momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

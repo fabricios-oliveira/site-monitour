@@ -1,0 +1,681 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Tela de Vendas - Sistema de Turismo{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .venda-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .venda-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .venda-header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .venda-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .venda-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .venda-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .venda-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .cliente-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            cursor: pointer;
+            border-left: 4px solid #667eea;
+        }
+        
+        .cliente-item:hover {
+            background: #e8e8ff;
+        }
+        
+        .cliente-nome {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .cliente-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .info-box strong {
+            color: #333;
+        }
+        
+        .resumo-section {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .resumo-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .resumo-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .resumo-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .resumo-valor {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .metodos-pagamento {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .metodo-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .metodo-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .metodo-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .metodo-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .metodo-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .parcelas-group {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .parcelas-group.show {
+            display: block;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #e8e8e8;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .success.show {
+            display: block;
+        }
+        
+        .cliente-search {
+            position: relative;
+        }
+        
+        .cliente-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+        }
+        
+        .cliente-results.show {
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="venda-container">
+    <div class="venda-header">
+        <h1>🎫 Tela de Vendas</h1>
+        <p>Crie e processe inscrições de clientes</p>
+    </div>
+    
+    <div class="error" id="error-box"></div>
+    <div class="success" id="success-box"></div>
+    
+    <div class="venda-row">
+        <!-- COLUNA 1: PASSEIO E CLIENTE -->
+        <div class="venda-section">
+            <h2>1️⃣ Selecione o Passeio</h2>
+            
+            <div class="form-group">
+                <label for="passeio">Passeio/Tour:</label>
+                <select id="passeio" name="passeio">
+                    <option value="">-- Selecione um passeio --</option>
+                    {% for passeio in passeios %}
+                        <option value="{{ passeio.id }}" data-preco="{{ passeio.pacotes.first.preco|default:0 }}">
+                            {{ passeio.titulo }}
+                            {% if passeio.pacotes.count > 0 %}
+                                ({{ passeio.pacotes.count }} pacotes)
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pacote">Pacote:</label>
+                <select id="pacote" name="pacote">
+                    <option value="">-- Selecione primeiro um passeio --</option>
+                </select>
+            </div>
+            
+            <div class="info-box" id="pacote-info" style="display: none;">
+                <strong>Informações do Pacote:</strong><br>
+                Preço: R$ <span id="pacote-preco">0.00</span><br>
+                Data: <span id="pacote-data">-</span><br>
+                Vagas: <span id="pacote-vagas">-</span>
+            </div>
+        </div>
+        
+        <!-- COLUNA 2: CLIENTE -->
+        <div class="venda-section">
+            <h2>2️⃣ Selecione o Cliente</h2>
+            
+            <div class="form-group cliente-search">
+                <label for="cliente-search">Buscar Cliente:</label>
+                <input 
+                    type="text" 
+                    id="cliente-search" 
+                    placeholder="Nome, CPF ou Matrícula..."
+                    autocomplete="off"
+                >
+                <div class="cliente-results" id="cliente-results"></div>
+            </div>
+            
+            <div class="info-box" id="cliente-info" style="display: none;">
+                <strong>Cliente Selecionado:</strong><br>
+                <span id="cliente-nome">-</span><br>
+                CPF: <span id="cliente-cpf">-</span><br>
+                Email: <span id="cliente-email">-</span><br>
+                Matrícula: <span id="cliente-matricula">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RESUMO E PAGAMENTO -->
+    <div class="venda-row">
+        <!-- COLUNA 1: RESUMO -->
+        <div class="resumo-section">
+            <h2>📊 Resumo da Venda</h2>
+            
+            <div class="resumo-row">
+                <div class="resumo-item">
+                    <div class="resumo-label">Valor Total</div>
+                    <div class="resumo-valor">R$ <span id="resumo-valor">0.00</span></div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">Forma de Pagamento</div>
+                    <div class="resumo-valor" id="resumo-metodo">-</div>
+                </div>
+                <div class="resumo-item">
+                    <div class="resumo-label">Parcelado em</div>
+                    <div class="resumo-valor"><span id="resumo-parcelas">1</span>x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- METODOS DE PAGAMENTO -->
+    <div class="venda-section">
+        <h2>💳 Selecione o Método de Pagamento</h2>
+        
+        <div class="metodos-pagamento" id="metodos-container">
+            <div class="metodo-btn" data-metodo="cartao_credito">
+                <div class="metodo-icon">💳</div>
+                <div class="metodo-label">Cartão de Crédito</div>
+            </div>
+            <div class="metodo-btn" data-metodo="cartao_debito">
+                <div class="metodo-icon">🏧</div>
+                <div class="metodo-label">Cartão de Débito</div>
+            </div>
+            <div class="metodo-btn" data-metodo="pix">
+                <div class="metodo-icon">📱</div>
+                <div class="metodo-label">PIX</div>
+            </div>
+        </div>
+        
+        <div class="parcelas-group" id="parcelas-group">
+            <label for="parcelas">Parcelado em:</label>
+            <select id="parcelas" name="parcelas">
+                <option value="1">À vista</option>
+                {% for i in "xxxxxxxxxxxxxxx" %}
+                    <option value="{{ forloop.counter }}">{{ forloop.counter }}x</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <!-- BOTOES -->
+    <div class="venda-section">
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="limparFormulario()">🔄 Limpar</button>
+            <button class="btn btn-primary" id="btn-processar" onclick="processarVenda()" disabled>
+                ✅ Processar Venda
+            </button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processando pagamento...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== STATE ==========
+let estadoVenda = {
+    passeio_id: null,
+    pacote_id: null,
+    cliente_id: null,
+    metodo_pagamento: null,
+    parcelas: 1,
+    valor: 0
+};
+
+// ========== PASSEIO SELECTION ==========
+document.getElementById('passeio').addEventListener('change', async function(e) {
+    const passeioId = this.value;
+    const pacoteSelect = document.getElementById('pacote');
+    
+    if (!passeioId) {
+        pacoteSelect.innerHTML = '<option value="">-- Selecione primeiro um passeio --</option>';
+        return;
+    }
+    
+    estadoVenda.passeio_id = passeioId;
+    
+    // Buscar pacotes (seria via AJAX em produção)
+    // Por enquanto, vamos popular com os dados do servidor
+    const option = this.selectedOptions[0];
+    const dataJson = option.getAttribute('data-preco');
+    
+    // Em produção: fetch(`/api/passeios/${passeioId}/pacotes/`)
+    // Por ora, mantém a estrutura base
+    
+    validarFormulario();
+});
+
+document.getElementById('pacote').addEventListener('change', function(e) {
+    const pacoteId = this.value;
+    estadoVenda.pacote_id = pacoteId;
+    
+    if (pacoteId) {
+        // Atualizar info do pacote (em produção, viria de AJAX)
+        document.getElementById('pacote-info').style.display = 'block';
+        document.getElementById('resumo-valor').textContent = '0.00'; // Placeholder
+    }
+    
+    validarFormulario();
+});
+
+// ========== CLIENTE SEARCH ==========
+let clienteSearchTimeout;
+
+document.getElementById('cliente-search').addEventListener('input', function(e) {
+    clearTimeout(clienteSearchTimeout);
+    const query = this.value.trim();
+    
+    if (query.length < 2) {
+        document.getElementById('cliente-results').classList.remove('show');
+        return;
+    }
+    
+    clienteSearchTimeout = setTimeout(async function() {
+        try {
+            const response = await fetch(`{% url 'passeios:buscar_cliente' %}?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            const resultsDiv = document.getElementById('cliente-results');
+            
+            if (data.clientes.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding: 10px; color: #999;">Nenhum cliente encontrado</div>';
+            } else {
+                resultsDiv.innerHTML = data.clientes.map(cliente => `
+                    <div class="cliente-item" onclick="selecionarCliente(${cliente.id}, '${cliente.nome}', '${cliente.cpf}', '${cliente.email}', '${cliente.matricula}')">
+                        <div class="cliente-nome">${cliente.nome}</div>
+                        <div class="cliente-info">
+                            CPF: ${cliente.cpf} | Matrícula: ${cliente.matricula}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            resultsDiv.classList.add('show');
+        } catch (error) {
+            console.error('Erro na busca:', error);
+        }
+    }, 300);
+});
+
+function selecionarCliente(id, nome, cpf, email, matricula) {
+    estadoVenda.cliente_id = id;
+    
+    document.getElementById('cliente-search').value = nome;
+    document.getElementById('cliente-results').classList.remove('show');
+    
+    document.getElementById('cliente-info').style.display = 'block';
+    document.getElementById('cliente-nome').textContent = nome;
+    document.getElementById('cliente-cpf').textContent = cpf;
+    document.getElementById('cliente-email').textContent = email;
+    document.getElementById('cliente-matricula').textContent = matricula;
+    
+    validarFormulario();
+}
+
+// ========== METODOS DE PAGAMENTO ==========
+document.querySelectorAll('.metodo-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        estadoVenda.metodo_pagamento = this.getAttribute('data-metodo');
+        document.getElementById('resumo-metodo').textContent = this.querySelector('.metodo-label').textContent;
+        
+        // Mostrar/ocultar parcelas apenas para cartão de crédito
+        const parcelasGroup = document.getElementById('parcelas-group');
+        if (estadoVenda.metodo_pagamento === 'cartao_credito') {
+            parcelasGroup.classList.add('show');
+        } else {
+            parcelasGroup.classList.remove('show');
+            estadoVenda.parcelas = 1;
+            document.getElementById('parcelas').value = 1;
+            document.getElementById('resumo-parcelas').textContent = 1;
+        }
+        
+        validarFormulario();
+    });
+});
+
+document.getElementById('parcelas').addEventListener('change', function(e) {
+    estadoVenda.parcelas = parseInt(this.value);
+    document.getElementById('resumo-parcelas').textContent = estadoVenda.parcelas;
+});
+
+// ========== VALIDAÇÃO ==========
+function validarFormulario() {
+    const podeProcessar = 
+        estadoVenda.pacote_id && 
+        estadoVenda.cliente_id && 
+        estadoVenda.metodo_pagamento;
+    
+    document.getElementById('btn-processar').disabled = !podeProcessar;
+}
+
+// ========== PROCESSAMENTO ==========
+async function processarVenda() {
+    if (!validarFormulario()) {
+        showError('Preencha todos os campos obrigatórios');
+        return;
+    }
+    
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('error-box').classList.remove('show');
+    
+    try {
+        const response = await fetch('{% url "passeios:processar_pagamento" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                pacote_id: estadoVenda.pacote_id,
+                cliente_id: estadoVenda.cliente_id,
+                metodo_pagamento: estadoVenda.metodo_pagamento,
+                parcelas: estadoVenda.parcelas
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Erro ao processar venda');
+        }
+        
+        // Redirecionar para checkout
+        window.location.href = data.checkout_url;
+        
+    } catch (error) {
+        document.getElementById('loading').classList.remove('show');
+        showError(error.message);
+    }
+}
+
+function showError(message) {
+    const errorBox = document.getElementById('error-box');
+    errorBox.textContent = message;
+    errorBox.classList.add('show');
+}
+
+function limparFormulario() {
+    estadoVenda = {
+        passeio_id: null,
+        pacote_id: null,
+        cliente_id: null,
+        metodo_pagamento: null,
+        parcelas: 1,
+        valor: 0
+    };
+    
+    document.getElementById('passeio').value = '';
+    document.getElementById('pacote').value = '';
+    document.getElementById('cliente-search').value = '';
+    document.getElementById('cliente-info').style.display = 'none';
+    document.getElementById('pacote-info').style.display = 'none';
+    document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('parcelas-group').classList.remove('show');
+    document.getElementById('resumo-valor').textContent = '0.00';
+    document.getElementById('resumo-metodo').textContent = '-';
+    document.getElementById('resumo-parcelas').textContent = '1';
+    
+    validarFormulario();
+}
+
+// ========== UTILITIES ==========
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

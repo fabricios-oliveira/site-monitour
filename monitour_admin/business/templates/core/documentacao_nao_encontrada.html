@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Documentação não encontrada{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div style="max-width: 600px; margin: 60px auto; padding: 40px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        
+        <h1 style="color: #856404; margin-top: 0;">⚠️ Documentação não encontrada</h1>
+        
+        <p style="color: #856404; line-height: 1.6;">
+            A documentação HTML ainda não foi gerada. 
+            Para criar a documentação, execute o seguinte comando no terminal:
+        </p>
+        
+        <div style="background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; font-family: monospace; overflow-x: auto;">
+            <code>python gerador_documentacao.py</code>
+        </div>
+        
+        <p style="color: #856404; margin-top: 20px;">
+            Após executar o comando, a documentação estará disponível em uma nova aba.
+        </p>
+        
+        <p style="color: #856404; font-size: 13px; margin-top: 30px;">
+            <strong>Pasta esperada:</strong> <code style="background: #fff; padding: 3px 6px; border-radius: 3px;">docs_html/index.html</code>
+        </p>
+        
+        <a href="{% url 'core:dashboard' %}" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;">
+            ← Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .dashboard-card {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .dashboard-card h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .quick-actions a {
+            display: block;
+            background: var(--button-bg);
+            color: var(--button-fg);
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .quick-actions a:hover {
+            background: var(--button-hover-bg);
+        }
+        .summary-item {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="dashboard-grid">
+        
+        <!-- Card de Resumo -->
+        <div class="dashboard-card">
+            <h2>Resumo Geral</h2>
+            <div class="summary-item"><strong>Total de Clientes:</strong> {{ total_clientes }}</div>
+            <div class="summary-item"><strong>Total de Fornecedores:</strong> {{ total_fornecedores }}</div>
+            <div class="summary-item"><strong>Passeios Agendados:</strong> {{ total_passeios_agendados }}</div>
+            <div class="summary-item"><strong>Inscrições na Última Semana:</strong> {{ inscricoes_recentes }}</div>
+        </div>
+
+        <!-- Card de Próximos Passeios -->
+        <div class="dashboard-card">
+            <h2>Próximos 5 Passeios</h2>
+            <ul>
+                {% for passeio in proximos_passeios %}
+                    <li>
+                        <a href="{% url 'admin:passeios_passeio_change' passeio.pk %}">{{ passeio.titulo }}</a> - {{ passeio.data_ida|date:"d/m/Y" }}
+                        {% if passeio.tipo_veiculo %}
+                            <br>
+                            <small>Ocupação: {{ passeio.num_inscricoes }} / {{ passeio.tipo_veiculo.capacidade }}</small>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>Nenhum passeio agendado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Lista de Aplicações Padrão do Admin -->
+    {% if app_list %}
+        {% for app in app_list %}
+            <div class="app-{{ app.app_label }} module">
+            <table>
+            <caption>
+                <a href="{{ app.app_url }}" class="section" title="Modelos no aplicativo {{ app.name }}">
+                    {{ app.name }}
+                </a>
+            </caption>
+            {% for model in app.models %}
+                <tr class="model-{{ model.object_name|lower }}">
+                {% if model.admin_url %}
+                    <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+                {% else %}
+                    <th scope="row">{{ model.name }}</th>
+                {% endif %}
+
+                {% if model.add_url %}
+                    <td><a href="{{ model.add_url }}" class="addlink">Adicionar</a></td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
+
+                {% if model.admin_url and show_changelinks %}
+                    {% if model.view_only %}
+                    <td><a href="{{ model.admin_url }}" class="viewlink">Ver</a></td>
+                    {% else %}
+                    <td><a href="{{ model.admin_url }}" class="changelink">Modificar</a></td>
+                    {% endif %}
+                {% elif show_changelinks %}
+                    <td>&nbsp;</td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Você não tem permissão para editar nenhum conteúdo.</p>
+    {% endif %}
+</div>
+{% endblock %}

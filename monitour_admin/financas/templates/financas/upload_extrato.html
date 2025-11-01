@@ -1,0 +1,22 @@
+{% extends "financas/base_financas.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+    <p>Faça o upload do seu extrato bancário no formato .OFX para importar as transações.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <div class="form-row">
+                {{ form.as_p }}
+            </div>
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="Importar" class="default">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Pagamento Falhou{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 100px auto; text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    
+    <div style="font-size: 60px; margin-bottom: 20px;">❌</div>
+    
+    <h1 style="color: #dc3545; margin-bottom: 10px;">Pagamento Não Aprovado</h1>
+    
+    <p style="font-size: 16px; color: #666; margin-bottom: 30px;">
+        Não conseguimos processar seu pagamento. 
+        Por favor, verifique os dados e tente novamente.
+    </p>
+    
+    <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #ffc107;">
+        <p><strong>⚠️ Possíveis causas:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px; text-align: left;">
+            <li>Dados do cartão incorretos</li>
+            <li>Saldo insuficiente</li>
+            <li>Cartão expirado ou bloqueado</li>
+            <li>Limite de operações atingido</li>
+        </ul>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <a href="{% url 'passeios:venda_principal' %}" style="padding: 12px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            🔄 Tentar Novamente
+        </a>
+        <a href="/gerencia/" style="padding: 12px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+            📊 Voltar ao Dashboard
+        </a>
+    </div>
+    
+    <p style="margin-top: 30px; font-size: 14px; color: #999;">
+        Se o problema persistir, por favor contate nosso suporte.
+    </p>
+</div>
+{% endblock %}
