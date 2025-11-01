@@ -1,0 +1,143 @@
+{% load static %}
+
+<nav class="container mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center">
+            <a href="{% url 'core:home' %}" class="flex items-center">
+                {% if site_settings.logo %}
+                    <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.company_name }}" class="h-12 w-auto">
+                {% else %}
+                    <div class="flex items-center">
+                        <i class="fas fa-map-marked-alt text-3xl text-primary mr-3"></i>
+                        <span class="text-2xl font-bold text-secondary">MONITOUR</span>
+                    </div>
+                {% endif %}
+            </a>
+        </div>
+        
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="{% url 'core:home' %}" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                <i class="fas fa-home mr-1"></i> Início
+            </a>
+            <a href="{% url 'packages:package_list' %}" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                <i class="fas fa-suitcase-rolling mr-1"></i> Pacotes
+            </a>
+            <a href="{% url 'blog:post_list' %}" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                <i class="fas fa-blog mr-1"></i> Blog
+            </a>
+            <a href="{% url 'core:about' %}" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                <i class="fas fa-info-circle mr-1"></i> Sobre
+            </a>
+            <a href="{% url 'core:contact' %}" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                <i class="fas fa-envelope mr-1"></i> Contato
+            </a>
+        </div>
+        
+        <!-- CTA Button & Social Links -->
+        <div class="hidden md:flex items-center space-x-4">
+            {% if site_settings.whatsapp %}
+                <a href="https://wa.me/{{ site_settings.whatsapp|cut:'+' }}" 
+                   target="_blank" 
+                   class="text-green-500 hover:text-green-600 transition-colors">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                </a>
+            {% endif %}
+            
+            {% if site_settings.instagram %}
+                <a href="{{ site_settings.instagram }}" 
+                   target="_blank" 
+                   class="text-pink-500 hover:text-pink-600 transition-colors">
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'core:contact' %}" class="btn-primary">
+                <i class="fas fa-paper-plane mr-2"></i>
+                Solicitar Orçamento
+            </a>
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-primary">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden mt-4 pb-4">
+        <div class="flex flex-col space-y-4">
+            <a href="{% url 'core:home' %}" class="text-gray-700 hover:text-primary font-medium transition-colors py-2">
+                <i class="fas fa-home mr-2"></i> Início
+            </a>
+            <a href="{% url 'packages:package_list' %}" class="text-gray-700 hover:text-primary font-medium transition-colors py-2">
+                <i class="fas fa-suitcase-rolling mr-2"></i> Pacotes
+            </a>
+            <a href="{% url 'blog:post_list' %}" class="text-gray-700 hover:text-primary font-medium transition-colors py-2">
+                <i class="fas fa-blog mr-2"></i> Blog
+            </a>
+            <a href="{% url 'core:about' %}" class="text-gray-700 hover:text-primary font-medium transition-colors py-2">
+                <i class="fas fa-info-circle mr-2"></i> Sobre
+            </a>
+            <a href="{% url 'core:contact' %}" class="text-gray-700 hover:text-primary font-medium transition-colors py-2">
+                <i class="fas fa-envelope mr-2"></i> Contato
+            </a>
+            
+            <!-- Mobile Social Links -->
+            <div class="flex space-x-4 pt-4 border-t">
+                {% if site_settings.whatsapp %}
+                    <a href="https://wa.me/{{ site_settings.whatsapp|cut:'+' }}" 
+                       target="_blank" 
+                       class="text-green-500 hover:text-green-600 transition-colors">
+                        <i class="fab fa-whatsapp text-xl"></i>
+                    </a>
+                {% endif %}
+                
+                {% if site_settings.instagram %}
+                    <a href="{{ site_settings.instagram }}" 
+                       target="_blank" 
+                       class="text-pink-500 hover:text-pink-600 transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                {% endif %}
+            </div>
+            
+            <a href="{% url 'core:contact' %}" class="btn-primary text-center">
+                <i class="fas fa-paper-plane mr-2"></i>
+                Solicitar Orçamento
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Script para mobile menu -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+                
+                // Alternar ícone do botão
+                const icon = this.querySelector('i');
+                if (mobileMenu.classList.contains('hidden')) {
+                    icon.className = 'fas fa-bars text-xl';
+                } else {
+                    icon.className = 'fas fa-times text-xl';
+                }
+            });
+            
+            // Fechar menu ao clicar em um link
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.className = 'fas fa-bars text-xl';
+                });
+            });
+        }
+    });
+</script>

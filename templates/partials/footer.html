@@ -1,0 +1,235 @@
+{% load static %}
+
+<div class="bg-secondary text-white">
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            <!-- Coluna 1: Sobre a MONITOUR -->
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center mb-4">
+                    {% if site_settings.logo %}
+                        <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.company_name }}" class="h-10 w-auto mr-3">
+                    {% else %}
+                        <i class="fas fa-map-marked-alt text-2xl text-primary mr-3"></i>
+                    {% endif %}
+                    <h3 class="text-xl font-bold">{{ site_settings.company_name|default:"MONITOUR" }}</h3>
+                </div>
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    {{ site_settings.company_description|default:"Sua agência de turismo especializada em experiências únicas e inesquecíveis. Há mais de 10 anos criando memórias e realizando sonhos de viagem." }}
+                </p>
+                
+                <!-- Redes Sociais -->
+                <div class="flex space-x-4">
+                    {% if site_settings.facebook %}
+                        <a href="{{ site_settings.facebook }}" target="_blank" 
+                           class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                    {% endif %}
+                    {% if site_settings.instagram %}
+                        <a href="{{ site_settings.instagram }}" target="_blank" 
+                           class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    {% endif %}
+                    {% if site_settings.youtube %}
+                        <a href="{{ site_settings.youtube }}" target="_blank" 
+                           class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    {% endif %}
+                    {% if site_settings.linkedin %}
+                        <a href="{{ site_settings.linkedin }}" target="_blank" 
+                           class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Coluna 2: Links Rápidos -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Links Rápidos</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{% url 'core:home' %}" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fas fa-home mr-2"></i> Início
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'packages:package_list' %}" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fas fa-suitcase-rolling mr-2"></i> Pacotes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:post_list' %}" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fas fa-blog mr-2"></i> Blog
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:about' %}" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fas fa-info-circle mr-2"></i> Sobre Nós
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:contact' %}" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fas fa-envelope mr-2"></i> Contato
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Coluna 3: Contato -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contato</h3>
+                <ul class="space-y-3">
+                    {% if site_settings.phone %}
+                        <li class="flex items-start">
+                            <i class="fas fa-phone text-primary mr-3 mt-1"></i>
+                            <div>
+                                <a href="tel:{{ site_settings.phone }}" class="text-gray-300 hover:text-primary transition-colors">
+                                    {{ site_settings.phone }}
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    
+                    {% if site_settings.whatsapp %}
+                        <li class="flex items-start">
+                            <i class="fab fa-whatsapp text-primary mr-3 mt-1"></i>
+                            <div>
+                                <a href="https://wa.me/{{ site_settings.whatsapp|cut:'+' }}" 
+                                   target="_blank" 
+                                   class="text-gray-300 hover:text-primary transition-colors">
+                                    {{ site_settings.whatsapp }}
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    
+                    {% if site_settings.email %}
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope text-primary mr-3 mt-1"></i>
+                            <div>
+                                <a href="mailto:{{ site_settings.email }}" class="text-gray-300 hover:text-primary transition-colors">
+                                    {{ site_settings.email }}
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    
+                    {% if site_settings.address %}
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-primary mr-3 mt-1"></i>
+                            <div class="text-gray-300">
+                                {{ site_settings.address }}
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Newsletter -->
+        {% if site_settings.show_newsletter %}
+        <div class="border-t border-gray-600 mt-8 pt-8">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold mb-4">
+                    <i class="fas fa-paper-plane text-primary mr-2"></i>
+                    Newsletter
+                </h3>
+                <p class="text-gray-300 mb-6">Receba as melhores ofertas e dicas de viagem diretamente no seu email!</p>
+                
+                <form method="post" action="{% url 'core:newsletter_signup' %}" class="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+                    {% csrf_token %}
+                    <input type="email" 
+                           name="email" 
+                           placeholder="Seu melhor email" 
+                           required
+                           class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary">
+                    <button type="submit" 
+                            class="btn-primary hover:bg-pink-600 px-6 py-3 rounded-lg font-semibold transition-all">
+                        Inscrever-se
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Copyright -->
+        <div class="border-t border-gray-600 mt-8 pt-6 text-center">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    &copy; {% now "Y" %} {{ site_settings.company_name|default:"MONITOUR" }}. Todos os direitos reservados.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">
+                        Política de Privacidade
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">
+                        Termos de Uso
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">
+                        FAQ
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Selo/Certificações -->
+            <div class="mt-4 pt-4 border-t border-gray-700">
+                <p class="text-gray-500 text-xs">
+                    <i class="fas fa-shield-alt text-primary mr-1"></i>
+                    Site seguro e protegido | Agência registrada no CADASTUR
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back to top button -->
+<div id="back-to-top" class="fixed bottom-20 right-6 z-30 hidden">
+    <button onclick="scrollToTop()" 
+            class="bg-primary hover:bg-pink-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
+
+<script>
+    // Back to top functionality
+    window.addEventListener('scroll', function() {
+        const backToTopButton = document.getElementById('back-to-top');
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.remove('hidden');
+        } else {
+            backToTopButton.classList.add('hidden');
+        }
+    });
+    
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Newsletter form feedback
+    document.querySelector('form[action*="newsletter"]')?.addEventListener('submit', function(e) {
+        const email = this.querySelector('input[type="email"]').value;
+        if (email) {
+            // Simular loading
+            const button = this.querySelector('button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Inscrevendo...';
+            button.disabled = true;
+            
+            // Restaurar após alguns segundos (em produção, isso seria tratado pelo Django)
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Inscrito!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+    });
+</script>
